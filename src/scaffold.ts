@@ -52,16 +52,15 @@ const LAYOUT_TEMPLATE = `<!doctype html>
 </html>
 `;
 
-const PAGE_TEMPLATE = `{{ await include("_layout.vto", { content: page.html }) }}
+const PAGE_TEMPLATE = `{{ include "_layout.vto" { content: page.html } }}
 `;
 
-const LISTING_TEMPLATE = `{{ await include("_layout.vto", { content: "" }) }}
-<!doctype html>
+const LISTING_TEMPLATE = `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Posts — {{ site.config.title }}</title>
+    <title>{{ listing.term?.name ?? listing.collection ?? "Posts" }} — {{ site.config.title }}</title>
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body>
@@ -69,7 +68,7 @@ const LISTING_TEMPLATE = `{{ await include("_layout.vto", { content: "" }) }}
       <a href="/">{{ site.config.title }}</a>
     </header>
     <main>
-      <h1>Posts</h1>
+      <h1>{{ listing.term?.name ?? listing.collection ?? "Posts" }}</h1>
       <ul>
         {{ for p of listing.pages }}
         <li>
@@ -87,6 +86,9 @@ const LISTING_TEMPLATE = `{{ await include("_layout.vto", { content: "" }) }}
         <a href="{{ listing.pagination.nextUrl }}">Older →</a>
       {{ /if }}
     </main>
+    <footer>
+      <p>Built with <a href="https://github.com/bobrocke/Inkwell">inkwell-ssg</a></p>
+    </footer>
   </body>
 </html>
 `;
@@ -141,8 +143,9 @@ published/
 // ── Main scaffold function ─────────────────────────────────────────────────────
 
 export async function scaffold(name: string, targetDir: string): Promise<void> {
-  if (existsSync(targetDir)) {
-    throw new Error(`Directory already exists: ${targetDir}`);
+  const configPath = path.join(targetDir, "inkwell.config.js");
+  if (existsSync(configPath)) {
+    throw new Error(`inkwell.config.js already exists in ${targetDir}`);
   }
 
   const dirs = [
@@ -179,10 +182,7 @@ export async function scaffold(name: string, targetDir: string): Promise<void> {
     type: "module",
     scripts: {
       build: "inkwell build",
-      dev: "inkwell dev",
-    },
-    devDependencies: {
-      "inkwell-ssg": "latest",
+      serve: "inkwell serve",
     },
   };
   await writeFile(

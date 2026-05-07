@@ -2,6 +2,31 @@
 import { defineCommand, runMain } from "citty";
 import { consola } from "consola";
 import path from "node:path";
+import { execSync } from "node:child_process";
+
+// ── install ────────────────────────────────────────────────────────────────────
+
+const installCmd = defineCommand({
+  meta: {
+    name: "install",
+    description: "Install site dependencies (runs npm install)",
+  },
+  args: {
+    cwd: {
+      type: "string",
+      description: "Project root directory (default: cwd)",
+    },
+  },
+  async run({ args }) {
+    const cwd = path.resolve(args.cwd ?? process.cwd());
+    consola.start("Installing dependencies…");
+    try {
+      execSync("npm install", { cwd, stdio: "inherit" });
+    } catch {
+      process.exit(1);
+    }
+  },
+});
 
 // ── build ──────────────────────────────────────────────────────────────────────
 
@@ -27,11 +52,11 @@ const buildCmd = defineCommand({
   },
 });
 
-// ── dev ────────────────────────────────────────────────────────────────────────
+// ── serve ──────────────────────────────────────────────────────────────────────
 
-const devCmd = defineCommand({
+const serveCmd = defineCommand({
   meta: {
-    name: "dev",
+    name: "serve",
     description: "Start the development server with file watching",
   },
   args: {
@@ -70,21 +95,32 @@ const newCmd = defineCommand({
   args: {
     name: {
       type: "positional",
-      description: "Site name / target directory",
-      required: true,
+      description: "Site name / target directory (default: current directory)",
+      required: false,
     },
   },
   async run({ args }) {
     const { scaffold } = await import("./scaffold.js");
-    const targetDir = path.resolve(process.cwd(), args.name);
+    const dest = args.name ?? ".";
+    const targetDir = path.resolve(process.cwd(), dest);
+    const siteName = path.basename(targetDir);
     consola.start(`Creating new site in ${targetDir} …`);
     try {
-      await scaffold(args.name, targetDir);
+      await scaffold(siteName, targetDir);
     } catch (err) {
       consola.error((err as Error).message);
       process.exit(1);
     }
-    consola.success(`Site created! Next steps:\n\n  cd ${args.name}\n  npm install\n  npm run dev\n`);
+    consola.start("Installing dependencies…");
+    try {
+      execSync("npm install", { cwd: targetDir, stdio: "inherit" });
+    } catch {
+      consola.warn("Dependency install failed — run `inkwell install` manually.");
+      process.exit(1);
+    }
+    const nextStep =
+      dest === "." ? `inkwell serve` : `cd ${dest}\n  inkwell serve`;
+    consola.success(`Ready! Start your dev server:\n\n  ${nextStep}\n`);
   },
 });
 
@@ -97,8 +133,9 @@ const main = defineCommand({
     version: "0.1.0",
   },
   subCommands: {
+    install: installCmd,
     build: buildCmd,
-    dev: devCmd,
+    serve: serveCmd,
     new: newCmd,
   },
 });

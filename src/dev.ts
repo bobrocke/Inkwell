@@ -4,7 +4,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { consola } from "consola";
 import sirv from "sirv";
 import chokidar from "chokidar";
-import { glob } from "fast-glob";
+import fg from "fast-glob";
 import { loadConfig } from "./config.js";
 import { build } from "./build.js";
 import type { ResolvedConfig } from "./types.js";
@@ -28,7 +28,7 @@ const RELOAD_SNIPPET = `<script src="${RELOAD_SCRIPT_PATH}"></script>`;
 
 /** Inject the reload snippet before </body> in every HTML file under outputDir. */
 async function injectReloadSnippet(outputDir: string): Promise<void> {
-  const files = await glob("**/*.html", { cwd: outputDir, absolute: true });
+  const files = await fg("**/*.html", { cwd: outputDir, absolute: true });
   await Promise.all(
     files.map(async (file) => {
       const html = await readFile(file, "utf8");
