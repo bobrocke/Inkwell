@@ -11,16 +11,20 @@ export default {
   siteUrl: "https://example.com",
   description: "A site built with inkwell-ssg.",
 
-  collections: {
-    posts: {
-      taxonomies: ["tags"],
+  taxonomies: [
+    { field: "tags", name: "Tags", urlPrefix: "/tags/" },
+  ],
+
+  collections: [
+    {
+      name: "posts",
+      pattern: "posts/**",
       pageSize: 10,
     },
-  },
+  ],
 
   rss: {
     enabled: true,
-    title: "${name} RSS Feed",
     limit: 20,
   },
 };
