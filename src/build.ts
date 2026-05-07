@@ -11,6 +11,7 @@ import { processCss } from "./css.js";
 import { copyStaticAssets } from "./assets.js";
 import { renderAll } from "./render/vento.js";
 import { generateRss } from "./rss.js";
+import { createEmitter } from "./plugins.js";
 import type { ResolvedConfig, Site } from "./types.js";
 
 export interface BuildOptions {
@@ -51,6 +52,9 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
   const config = await loadConfig(cwd);
   consola.info(`Building "${config.title}" → ${config.outputDir}`);
 
+  const emitter = createEmitter(config.plugins);
+  await emitter.emit("beforeBuild", { config });
+
   // ── 2. Clear output ─────────────────────────────────────────────────────────
   if (!options.incremental) {
     await rm(config.outputDir, { recursive: true, force: true });
@@ -61,6 +65,7 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
   consola.start("Discovering content…");
   const files = await discoverContent(config);
   consola.info(`Found ${files.length} content file(s)`);
+  await emitter.emit("afterDiscover", { files, config });
 
   // ── 4. Parse ────────────────────────────────────────────────────────────────
   consola.start("Parsing markdown…");
@@ -69,6 +74,7 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
   // ── 5. EXIF ─────────────────────────────────────────────────────────────────
   consola.start("Extracting EXIF…");
   const pages = await enrichAllWithExif(rawPages, config);
+  await emitter.emit("afterParse", { pages, config });
 
   // ── 6. Taxonomy ─────────────────────────────────────────────────────────────
   consola.start("Building taxonomies…");
@@ -78,6 +84,7 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
     0,
   );
   if (termCount > 0) consola.info(`Built ${termCount} taxonomy term(s)`);
+  await emitter.emit("afterTaxonomy", { pages, taxonomies, config });
 
   // ── 7. Listings ─────────────────────────────────────────────────────────────
   consola.start("Building listings…");
@@ -89,17 +96,18 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
 
   // ── 9–12. Output (parallelisable) ───────────────────────────────────────────
   consola.start("Processing CSS, assets, templates & RSS…");
+  await emitter.emit("beforeRender", { site });
   await Promise.all([
     processCss(config),
     copyStaticAssets(config),
     renderAll(site, config),
     generateRss(navPages, config),
   ]);
+  await emitter.emit("afterRender", { site });
 
   const duration = Date.now() - start;
-  consola.success(
-    `Built ${navPages.length} page(s) in ${duration}ms`,
-  );
+  consola.success(`Built ${navPages.length} page(s) in ${duration}ms`);
+  await emitter.emit("afterBuild", { site, duration });
 
   return { site, config, duration };
 }

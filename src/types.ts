@@ -180,7 +180,23 @@ export type HookName =
   | "afterRender"
   | "afterBuild";
 
+export interface HookPayloads {
+  beforeBuild: { config: ResolvedConfig };
+  afterDiscover: { files: string[]; config: ResolvedConfig };
+  afterParse: { pages: Page[]; config: ResolvedConfig };
+  afterTaxonomy: {
+    pages: Page[];
+    taxonomies: Record<string, Record<string, Term>>;
+    config: ResolvedConfig;
+  };
+  beforeRender: { site: Site };
+  afterRender: { site: Site };
+  afterBuild: { site: Site; duration: number };
+}
+
 export interface InkwellPlugin {
   name: string;
-  hooks: Partial<Record<HookName, (...args: unknown[]) => void | Promise<void>>>;
+  hooks: {
+    [K in HookName]?: (payload: HookPayloads[K]) => void | Promise<void>;
+  };
 }

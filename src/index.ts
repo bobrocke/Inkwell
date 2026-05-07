@@ -12,6 +12,7 @@ export type {
   InkwellConfig,
   ResolvedConfig,
   HookName,
+  HookPayloads,
   InkwellPlugin,
 } from "./types.js";
 
@@ -27,5 +28,6 @@ export { processCss } from "./css.js";
 export { copyStaticAssets } from "./assets.js";
 export { generateRss } from "./rss.js";
 export { renderAll } from "./render/vento.js";
+export { PluginEmitter, createEmitter } from "./plugins.js";
 export { build } from "./build.js";
 export type { BuildOptions, BuildResult } from "./build.js";
