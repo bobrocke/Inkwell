@@ -12,6 +12,7 @@ The approach is to build incrementally in phases, starting with project scaffold
 content/          → markdown source files
 static/           → copied as-is to published/
 templates/        → Vento templates
+assets/           → CSS/JS source files processed by lightningcss
 published/        → build output
 inkwell.config.js → user config
 ```

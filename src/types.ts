@@ -143,6 +143,8 @@ export interface InkwellConfig {
   outputDir?: string;
   staticDir?: string;
   templatesDir?: string;
+  /** CSS/JS source assets processed before output, default "assets" */
+  assetsDir?: string;
   /** Default items per listing page, default 10 */
   pageSize?: number;
   taxonomies?: TaxonomyConfig[];
@@ -159,6 +161,7 @@ export interface ResolvedConfig {
   outputDir: string;
   staticDir: string;
   templatesDir: string;
+  assetsDir: string;
   pageSize: number;
   taxonomies: TaxonomyConfig[];
   collections: CollectionConfig[];

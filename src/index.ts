@@ -23,3 +23,4 @@ export { buildTaxonomies, slugify } from "./taxonomy.js";
 export { buildListings } from "./listings.js";
 export type { ListingResult } from "./listings.js";
 export { assembleSite } from "./site.js";
+export { processCss } from "./css.js";
