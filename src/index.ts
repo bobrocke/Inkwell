@@ -14,3 +14,5 @@ export type {
   HookName,
   InkwellPlugin,
 } from "./types.js";
+
+export { loadConfig } from "./config.js";
