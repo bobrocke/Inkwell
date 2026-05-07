@@ -1,7 +1,7 @@
 {
   "name": "inkwell",
   "version": "0.1.0",
-  "description": "An opinionated batteries-included static site generator writting in TypeScript",
+  "description": "An opinionated, batteries-included, static site generator written in TypeScript",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
