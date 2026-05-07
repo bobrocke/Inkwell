@@ -27,3 +27,5 @@ export { processCss } from "./css.js";
 export { copyStaticAssets } from "./assets.js";
 export { generateRss } from "./rss.js";
 export { renderAll } from "./render/vento.js";
+export { build } from "./build.js";
+export type { BuildOptions, BuildResult } from "./build.js";
