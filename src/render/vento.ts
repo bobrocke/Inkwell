@@ -19,7 +19,9 @@ function createEngine(templatesDir: string) {
 // Template lookup order for a Listing:
 //   1. "{collection}-listing"        (e.g. posts-listing.vto)
 //   2. "{taxonomy}-listing"          (e.g. tags-listing.vto)
-//   3. "listing"                     (listing.vto)
+//   3. "{taxonomy}-index"            (e.g. tags-index.vto, taxonomy index only)
+//   4. "taxonomy-index"              (taxonomy-index.vto, taxonomy index only)
+//   5. "listing"                     (listing.vto)
 
 function resolvePageTemplate(page: Page): string {
   const layout = page.frontmatter.layout;
@@ -28,10 +30,17 @@ function resolvePageTemplate(page: Page): string {
   return "page.vto";
 }
 
-function resolveListingTemplate(listing: Listing): string {
-  if (listing.collection) return `${listing.collection}-listing.vto`;
-  if (listing.term) return `${listing.term.taxonomy}-listing.vto`;
-  return "listing.vto";
+function resolveListingTemplate(listing: Listing): [string, string[]] {
+  if (listing.collection)
+    return [`${listing.collection}-listing.vto`, ["listing.vto"]];
+  if (listing.term)
+    return [`${listing.term.taxonomy}-listing.vto`, ["listing.vto"]];
+  if (listing.taxonomyIndex)
+    return [
+      `${listing.taxonomyIndex}-index.vto`,
+      ["taxonomy-index.vto", "listing.vto"],
+    ];
+  return ["listing.vto", []];
 }
 
 // ─── Output path ──────────────────────────────────────────────────────────────
@@ -122,12 +131,12 @@ async function renderListings(
 ): Promise<void> {
   await Promise.all(
     site.listings.map(async (listing) => {
-      const templateName = resolveListingTemplate(listing);
+      const [templateName, fallbacks] = resolveListingTemplate(listing);
       const html = await renderTemplate(
         engine,
         templateName,
         { listing, site },
-        ["listing.vto"],
+        fallbacks,
       );
       const outPath = urlToOutputPath(listing.url, config.outputDir);
       await write(outPath, html);

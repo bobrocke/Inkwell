@@ -7,6 +7,7 @@ import chokidar from "chokidar";
 import fg from "fast-glob";
 import { loadConfig } from "./config.js";
 import { build } from "./build.js";
+import { resetProcessor } from "./content/parse.js";
 import type { ResolvedConfig } from "./types.js";
 
 export interface DevOptions {
@@ -110,6 +111,9 @@ export async function dev(options: DevOptions = {}): Promise<void> {
   consola.success(`Dev server running at http://${host}:${port}`);
 
   // ── File watcher ───────────────────────────────────────────────────────────
+  const configFile = path.resolve(cwd, "inkwell.config.js");
+  const configFileTs = path.resolve(cwd, "inkwell.config.ts");
+
   const watchDirs = [
     config.contentDir,
     config.templatesDir,
@@ -117,9 +121,9 @@ export async function dev(options: DevOptions = {}): Promise<void> {
     config.staticDir,
   ].filter(Boolean);
 
-  consola.info(`Watching: ${watchDirs.map((d) => path.relative(cwd, d)).join(", ")}`);
+  consola.info(`Watching: ${watchDirs.map((d) => path.relative(cwd, d)).join(", ")}, inkwell.config.js`);
 
-  const watcher = chokidar.watch(watchDirs, {
+  const watcher = chokidar.watch([...watchDirs, configFile, configFileTs], {
     ignoreInitial: true,
     ignored: /(^|[/\\])\../,
   });
@@ -127,14 +131,15 @@ export async function dev(options: DevOptions = {}): Promise<void> {
   let rebuildTimer: ReturnType<typeof setTimeout> | null = null;
   let rebuilding = false;
 
-  const scheduleRebuild = (eventType: string, filePath: string) => {
+  const scheduleRebuild = (eventType: string, filePath: string, isConfig = false) => {
     consola.info(`Changed: ${path.relative(cwd, filePath)} (${eventType})`);
     if (rebuildTimer) clearTimeout(rebuildTimer);
     rebuildTimer = setTimeout(async () => {
       if (rebuilding) return;
       rebuilding = true;
       try {
-        await build({ cwd, incremental: true });
+        if (isConfig) resetProcessor();
+        await build({ cwd, incremental: !isConfig });
         await injectReloadSnippet(config.outputDir);
         broadcastReload();
       } catch (err) {
@@ -145,9 +150,11 @@ export async function dev(options: DevOptions = {}): Promise<void> {
     }, 50);
   };
 
-  watcher.on("add", (p) => scheduleRebuild("add", p));
-  watcher.on("change", (p) => scheduleRebuild("change", p));
-  watcher.on("unlink", (p) => scheduleRebuild("unlink", p));
+  const isConfigFile = (p: string) => p === configFile || p === configFileTs;
+
+  watcher.on("add", (p) => scheduleRebuild("add", p, isConfigFile(p)));
+  watcher.on("change", (p) => scheduleRebuild("change", p, isConfigFile(p)));
+  watcher.on("unlink", (p) => scheduleRebuild("unlink", p, isConfigFile(p)));
   watcher.on("error", (err) => consola.error("Watcher error:", err));
 
   // ── Graceful shutdown ──────────────────────────────────────────────────────

@@ -120,7 +120,9 @@ function buildCollectionListings(
 
   for (const [collectionName, collPages] of groups) {
     // Find optional config for this collection
-    const colConfig = config.collections.find((c) => c.name === collectionName);
+    const colConfig = config.collections.find(
+      (c) => c.name.toLowerCase() === collectionName.toLowerCase(),
+    );
     const pageSize = colConfig?.pageSize ?? config.pageSize;
     const sortBy = colConfig?.sort ?? "date";
     const sortDir = colConfig?.sortDir ?? "desc";
@@ -135,7 +137,7 @@ function buildCollectionListings(
     paginatedGroups.forEach(({ items, pagination }, i) => {
       allListings.push({
         url: pageUrl(baseUrl, i + 1),
-        items,
+        pages: items,
         pagination,
         title: colConfig?.name ?? collectionName,
         collection: collectionName,
@@ -158,9 +160,30 @@ function buildTermListings(
   const listings: Listing[] = [];
 
   for (const [field, termMap] of Object.entries(taxonomies)) {
-    const taxConfig = config.taxonomies.find((t) => t.field === field);
-    const pageSize = config.pageSize;
+    const taxConfig = config.taxonomies.find((t) => t.name === field);
+    const pageSize = taxConfig?.pageSize ?? config.pageSize;
+    const urlPrefix = `/${field}/`;
+    const taxTitle = field.charAt(0).toUpperCase() + field.slice(1);
 
+    // Taxonomy index listing — one page listing all terms
+    const allTerms = Object.values(termMap).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
+    listings.push({
+      url: urlPrefix,
+      pages: [],
+      pagination: {
+        currentPage: 1,
+        totalPages: 1,
+        totalItems: allTerms.length,
+        pageSize: allTerms.length,
+      },
+      title: taxTitle,
+      terms: allTerms,
+      taxonomyIndex: field,
+    });
+
+    // Per-term listings
     for (const term of Object.values(termMap)) {
       const sorted = sortPages(term.pages, "date", "desc");
       const paginatedGroups = paginate(sorted, pageSize, term.url);
@@ -168,9 +191,9 @@ function buildTermListings(
       paginatedGroups.forEach(({ items, pagination }, i) => {
         listings.push({
           url: pageUrl(term.url, i + 1),
-          items,
+          pages: items,
           pagination,
-          title: `${taxConfig?.name ?? field}: ${term.name}`,
+          title: `${taxTitle}: ${term.name}`,
           term,
         });
       });

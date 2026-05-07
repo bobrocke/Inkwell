@@ -1,34 +1,20 @@
 import { readFile } from "node:fs/promises";
 import { relative, basename, dirname, join } from "node:path";
-import { unified } from "unified";
+import { unified, type Processor } from "unified";
 import remarkParse from "remark-parse";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
 import { parse as parseYaml } from "yaml";
 import { visit } from "unist-util-visit";
-import { createHighlighter, type Highlighter } from "shiki";
+import { createHighlighter } from "shiki";
 import type { Node } from "unist";
 import type { Element, Root } from "hast";
 import type { Page, ResolvedConfig } from "../types.js";
 
-// ─── Shiki singleton ──────────────────────────────────────────────────────────
-
-let _highlighter: Highlighter | null = null;
-
-async function getHighlighter(): Promise<Highlighter> {
-  if (!_highlighter) {
-    _highlighter = await createHighlighter({
-      themes: ["github-light", "github-dark"],
-      langs: ["typescript", "javascript", "bash", "json", "css", "html", "markdown", "yaml", "python", "rust", "go"],
-    });
-  }
-  return _highlighter;
-}
-
 // ─── Rehype plugin: syntax highlighting ──────────────────────────────────────
 
-function makeRehypeShiki(highlighter: Highlighter) {
+function makeRehypeShiki(highlighter: Awaited<ReturnType<typeof createHighlighter>>) {
   // Returns a unified plugin (a function that returns the transformer)
   return function rehypeShikiPlugin() {
     return function (tree: Root) {
@@ -63,6 +49,38 @@ function makeRehypeShiki(highlighter: Highlighter) {
       for (const task of tasks) task();
     };
   };
+}
+
+// ─── Shiki setup ──────────────────────────────────────────────────────────────
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyProcessor = Processor<any, any, any, any, any>;
+
+let _processorPromise: Promise<AnyProcessor> | null = null;
+
+async function buildProcessor(langs: string[]): Promise<AnyProcessor> {
+  const highlighter = await createHighlighter({
+    themes: ["github-light", "github-dark"],
+    langs,
+  });
+  return unified()
+    .use(remarkParse)
+    .use(remarkFrontmatter, ["yaml"])
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(makeRehypeShiki(highlighter))
+    .use(rehypeStringify, { allowDangerousHtml: true });
+}
+
+function getProcessor(langs: string[]): Promise<AnyProcessor> {
+  if (!_processorPromise) {
+    _processorPromise = buildProcessor(langs);
+  }
+  return _processorPromise;
+}
+
+/** Reset the processor singleton (e.g. after a config change in dev mode). */
+export function resetProcessor(): void {
+  _processorPromise = null;
 }
 
 // ─── Frontmatter extraction ───────────────────────────────────────────────────
@@ -125,28 +143,16 @@ function extractExcerpt(html: string): string {
  * Frontmatter is extracted and the remaining content is rendered to HTML
  * with syntax highlighting applied at build time via Shiki.
  */
-export async function parseFile(
+async function parseFileInternal(
   filePath: string,
+  raw: string,
+  processor: AnyProcessor,
   config: ResolvedConfig,
 ): Promise<Page> {
-  const highlighter = await getHighlighter();
-  const raw = await readFile(filePath, "utf-8");
-
-  // Two-pass: first extract frontmatter from the AST, then render HTML
-  const parser = unified().use(remarkParse).use(remarkFrontmatter, ["yaml"]);
-
-  const mdast = parser.parse(raw);
+  const mdast = processor.parse(raw);
   const frontmatter = extractFrontmatter(mdast);
-
-  const processor = unified()
-    .use(remarkParse)
-    .use(remarkFrontmatter, ["yaml"])
-    .use(remarkRehype, { allowDangerousHtml: true })
-    .use(makeRehypeShiki(highlighter))
-    .use(rehypeStringify, { allowDangerousHtml: true });
-
-  const vfile = await processor.process(raw);
-  const html = String(vfile);
+  const vfile = await processor.run(mdast);
+  const html = String(processor.stringify(vfile as Root));
 
   const url = fileToUrl(filePath, config.contentDir);
   const title = String(frontmatter.title ?? basename(filePath, ".md"));
@@ -172,11 +178,34 @@ export async function parseFile(
 }
 
 /**
+ * Parse a single markdown file into a Page.
+ */
+export async function parseFile(
+  filePath: string,
+  config: ResolvedConfig,
+): Promise<Page> {
+  const [raw, processor] = await Promise.all([
+    readFile(filePath, "utf-8"),
+    getProcessor(config.shiki.langs),
+  ]);
+  return parseFileInternal(filePath, raw, processor, config);
+}
+
+/**
  * Parse all discovered content files into Pages.
  */
 export async function parseContent(
   filePaths: string[],
   config: ResolvedConfig,
 ): Promise<Page[]> {
-  return Promise.all(filePaths.map((f) => parseFile(f, config)));
+  const [contents, processor] = await Promise.all([
+    Promise.all(filePaths.map((f) => readFile(f, "utf-8"))),
+    getProcessor(config.shiki.langs),
+  ]);
+
+  return Promise.all(
+    filePaths.map((filePath, i) =>
+      parseFileInternal(filePath, contents[i], processor, config),
+    ),
+  );
 }

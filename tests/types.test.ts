@@ -82,7 +82,7 @@ describe("Listing type", () => {
     };
     const listing: Listing = {
       url: "/posts/page/2/",
-      items: [],
+      pages: [],
       pagination,
       collection: "posts",
     };

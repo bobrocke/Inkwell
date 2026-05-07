@@ -9,6 +9,7 @@ export type {
   TaxonomyConfig,
   CollectionConfig,
   RssConfig,
+  ShikiConfig,
   InkwellConfig,
   ResolvedConfig,
   HookName,
@@ -18,7 +19,7 @@ export type {
 
 export { loadConfig } from "./config.js";
 export { discoverContent } from "./content/discover.js";
-export { parseContent, parseFile, fileToUrl } from "./content/parse.js";
+export { parseContent, parseFile, fileToUrl, resetProcessor } from "./content/parse.js";
 export { enrichAllWithExif, enrichWithExif } from "./content/exif.js";
 export { buildTaxonomies, slugify } from "./taxonomy.js";
 export { buildListings } from "./listings.js";

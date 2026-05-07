@@ -78,8 +78,8 @@ export interface PaginationInfo {
 export interface Listing {
   /** Root-relative URL for this listing page, e.g. /posts/page/2/ */
   url: string;
-  /** The slice of items (Pages or Terms) shown on this listing page */
-  items: (Page | Term)[];
+  /** The slice of Pages shown on this listing page */
+  pages: Page[];
   pagination: PaginationInfo;
   /** Optional display title, e.g. "Posts tagged typescript — page 2" */
   title?: string;
@@ -87,6 +87,10 @@ export interface Listing {
   term?: Term;
   /** Set when this listing belongs to a named collection */
   collection?: string;
+  /** Set on taxonomy index listings — all terms for this taxonomy */
+  terms?: Term[];
+  /** Set on taxonomy index listings — the taxonomy field name, e.g. "tags" */
+  taxonomyIndex?: string;
 }
 
 // ─── Site ─────────────────────────────────────────────────────────────────────
@@ -106,13 +110,16 @@ export interface Site {
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
+export interface ShikiConfig {
+  /** Languages to load for syntax highlighting. Defaults to a curated common set. */
+  langs?: string[];
+}
+
 export interface TaxonomyConfig {
-  /** Frontmatter field name, e.g. "tags" */
-  field: string;
-  /** Human-readable name, e.g. "Tags" */
-  name?: string;
-  /** URL prefix for term archives, e.g. "/tags/" */
-  urlPrefix?: string;
+  /** Frontmatter field name, URL slug, and basis for display name, e.g. "tags" → /tags/ */
+  name: string;
+  /** Items per term listing page; overrides top-level pageSize */
+  pageSize?: number;
 }
 
 export interface CollectionConfig {
@@ -151,6 +158,7 @@ export interface InkwellConfig {
   collections?: CollectionConfig[];
   rss?: Partial<RssConfig>;
   plugins?: InkwellPlugin[];
+  shiki?: ShikiConfig;
 }
 
 export interface ResolvedConfig {
@@ -167,6 +175,7 @@ export interface ResolvedConfig {
   collections: CollectionConfig[];
   rss: RssConfig;
   plugins: InkwellPlugin[];
+  shiki: Required<ShikiConfig>;
 }
 
 // ─── Plugin system ────────────────────────────────────────────────────────────

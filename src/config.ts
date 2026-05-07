@@ -1,12 +1,16 @@
 import { createJiti } from "jiti";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import type { InkwellConfig, ResolvedConfig, RssConfig } from "./types.js";
+import type { InkwellConfig, ResolvedConfig, RssConfig, ShikiConfig } from "./types.js";
 
 const DEFAULT_RSS: RssConfig = {
   enabled: true,
   path: "/rss.xml",
   limit: 20,
+};
+
+const DEFAULT_SHIKI: Required<ShikiConfig> = {
+  langs: ["javascript", "typescript", "php", "html", "erb", "go", "json", "liquid", "markdown", "ruby", "css"],
 };
 
 const DEFAULTS = {
@@ -21,6 +25,7 @@ const DEFAULTS = {
   collections: [],
   rss: DEFAULT_RSS,
   plugins: [],
+  shiki: DEFAULT_SHIKI,
 } satisfies Omit<ResolvedConfig, "siteUrl" | "title">;
 
 /**
@@ -58,13 +63,18 @@ export async function loadConfig(
     collections: userConfig.collections ?? DEFAULTS.collections,
     rss: { ...DEFAULT_RSS, ...userConfig.rss },
     plugins: userConfig.plugins ?? DEFAULTS.plugins,
+    shiki: {
+      langs: userConfig.shiki?.langs
+        ? [...new Set([...DEFAULTS.shiki.langs, ...userConfig.shiki.langs])]
+        : DEFAULTS.shiki.langs,
+    },
   };
 }
 
 async function readConfigFile(
   configPath: string,
 ): Promise<Partial<InkwellConfig>> {
-  const jiti = createJiti(pathToFileURL(configPath).href);
+  const jiti = createJiti(pathToFileURL(configPath).href, { moduleCache: false });
 
   let mod: unknown;
   try {

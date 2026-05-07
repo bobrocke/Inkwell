@@ -5,14 +5,17 @@ import { consola } from "consola";
 
 // ── Scaffold file templates ────────────────────────────────────────────────────
 
-const CONFIG_TEMPLATE = (name: string) => `/** @type {import('inkwell-ssg').InkwellConfig} */
+const CONFIG_TEMPLATE = (
+  name: string,
+) => `/** @type {import('inkwell-ssg').InkwellConfig} */
 export default {
   title: "${name}",
   siteUrl: "https://example.com",
   description: "A site built with inkwell-ssg.",
 
   taxonomies: [
-    { field: "tags", name: "Tags", urlPrefix: "/tags/" },
+    { name: "tags", pageSize: 10 },
+    { name: "categories", pageSize: 10 },
   ],
 
   collections: [
@@ -27,6 +30,12 @@ export default {
     enabled: true,
     limit: 20,
   },
+
+  // Default Shiki languages: javascript, typescript, php, html, erb, go, json, liquid, markdown, ruby, css
+  // Add more languages as needed:
+  // shiki: {
+  //   langs: ["python", "rust", "bash"],
+  // },
 };
 `;
 
@@ -35,7 +44,7 @@ const LAYOUT_TEMPLATE = `<!doctype html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{{ page.frontmatter.title ?? site.config.title }}</title>
+    <title>{{ title ?? site.config.title }}</title>
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body>
@@ -52,45 +61,29 @@ const LAYOUT_TEMPLATE = `<!doctype html>
 </html>
 `;
 
-const PAGE_TEMPLATE = `{{ include "_layout.vto" { content: page.html } }}
+const PAGE_TEMPLATE = `{{ include "_partials/layout.vto" { content: page.html, title: page.frontmatter.title } }}
 `;
 
-const LISTING_TEMPLATE = `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{{ listing.term?.name ?? listing.collection ?? "Posts" }} — {{ site.config.title }}</title>
-    <link rel="stylesheet" href="/css/style.css" />
-  </head>
-  <body>
-    <header>
-      <a href="/">{{ site.config.title }}</a>
-    </header>
-    <main>
-      <h1>{{ listing.term?.name ?? listing.collection ?? "Posts" }}</h1>
-      <ul>
-        {{ for p of listing.pages }}
-        <li>
-          <a href="{{ p.url }}">{{ p.frontmatter.title }}</a>
-          {{ if p.frontmatter.date }}
-            <time>{{ p.frontmatter.date }}</time>
-          {{ /if }}
-        </li>
-        {{ /for }}
-      </ul>
-      {{ if listing.pagination.prevUrl }}
-        <a href="{{ listing.pagination.prevUrl }}">← Newer</a>
-      {{ /if }}
-      {{ if listing.pagination.nextUrl }}
-        <a href="{{ listing.pagination.nextUrl }}">Older →</a>
-      {{ /if }}
-    </main>
-    <footer>
-      <p>Built with <a href="https://github.com/bobrocke/Inkwell">inkwell-ssg</a></p>
-    </footer>
-  </body>
-</html>
+const LISTING_TEMPLATE = `{{- set content }}
+<h1>{{ listing.title ?? listing.collection }}</h1>
+<ul>
+  {{ for p of listing.pages }}
+  <li>
+    <a href="{{ p.url }}">{{ p.frontmatter.title }}</a>
+    {{ if p.frontmatter.date }}
+      <time>{{ p.frontmatter.date }}</time>
+    {{ /if }}
+  </li>
+  {{ /for }}
+</ul>
+{{ if listing.pagination.prevUrl }}
+  <a href="{{ listing.pagination.prevUrl }}">← Newer</a>
+{{ /if }}
+{{ if listing.pagination.nextUrl }}
+  <a href="{{ listing.pagination.nextUrl }}">Older →</a>
+{{ /if }}
+{{- /set }}
+{{ include "_partials/layout.vto" { content, title: listing.title } }}
 `;
 
 const CSS_TEMPLATE = `/* inkwell-ssg starter styles */
@@ -118,6 +111,7 @@ const SAMPLE_POST = `---
 title: "Hello, World!"
 date: "${new Date().toISOString().slice(0, 10)}"
 tags: [hello, inkwell]
+categories: [general]
 ---
 
 # Hello, World!
@@ -138,10 +132,25 @@ export default {
     { name: "posts", pattern: "posts/**", pageSize: 10 },
   ],
   taxonomies: [
-    { field: "tags", name: "Tags", urlPrefix: "/tags/" },
+    { name: "tags", pageSize: 10 },
+    { name: "categories", pageSize: 10 },
   ],
 };
 \`\`\`
+`;
+
+const TAXONOMY_INDEX_TEMPLATE = `{{- set content }}
+<h1>{{ listing.title }}</h1>
+<ul>
+  {{ for term of listing.terms }}
+  <li>
+    <a href="{{ term.url }}">{{ term.name }}</a>
+    <span>({{ term.count }})</span>
+  </li>
+  {{ /for }}
+</ul>
+{{- /set }}
+{{ include "_partials/layout.vto" { content, title: listing.title } }}
 `;
 
 const INDEX_PAGE = `---
@@ -169,7 +178,7 @@ export async function scaffold(name: string, targetDir: string): Promise<void> {
   const dirs = [
     targetDir,
     path.join(targetDir, "content", "posts"),
-    path.join(targetDir, "templates"),
+    path.join(targetDir, "templates", "_partials"),
     path.join(targetDir, "assets", "css"),
     path.join(targetDir, "static"),
   ];
@@ -180,9 +189,10 @@ export async function scaffold(name: string, targetDir: string): Promise<void> {
 
   const files: Array<[string, string]> = [
     ["inkwell.config.js", CONFIG_TEMPLATE(name)],
-    ["templates/_layout.vto", LAYOUT_TEMPLATE],
+    ["templates/_partials/layout.vto", LAYOUT_TEMPLATE],
     ["templates/page.vto", PAGE_TEMPLATE],
     ["templates/listing.vto", LISTING_TEMPLATE],
+    ["templates/taxonomy-index.vto", TAXONOMY_INDEX_TEMPLATE],
     ["assets/css/style.css", CSS_TEMPLATE],
     ["content/index.md", INDEX_PAGE],
     ["content/posts/hello-world.md", SAMPLE_POST],

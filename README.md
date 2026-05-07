@@ -6,20 +6,29 @@ A batteries-included static site generator for content-heavy sites. TypeScript, 
 
 ## Quick start
 
+Start a new site from scratch (empty directory):
+
 ```bash
-npx inkwell-ssg new my-site
-cd my-site
-npm install
-npx inkwell-ssg dev
+mkdir my-site && cd my-site
+npx inkwell-ssg new .
+inkwell serve
+```
+
+Or with a named subdirectory:
+
+```bash
+  npx inkwell-ssg new my-site
+  cd my-site
+  inkwell serve
 ```
 
 ## Commands
 
-| Command | Description |
-|---|---|
-| `inkwell build` | Build the site into `_published/` |
-| `inkwell dev` | Build, serve, and watch for changes (with live reload) |
-| `inkwell new <name>` | Scaffold a new site |
+| Command              | Description                                            |
+| -------------------- | ------------------------------------------------------ |
+| `inkwell build`      | Build the site into `_published/`                      |
+| `inkwell dev`        | Build, serve, and watch for changes (with live reload) |
+| `inkwell new <name>` | Scaffold a new site                                    |
 
 All commands accept `--cwd <path>` to run from a different directory. `inkwell dev` also accepts `--port` and `--host`.
 
@@ -71,7 +80,9 @@ Templates use [Vento](https://vento.js.org/). Each template receives a `page`, `
 <!-- templates/page.vto -->
 <!doctype html>
 <html>
-  <head><title>{{ page.title }} — {{ site.config.site.title }}</title></head>
+  <head>
+    <title>{{ page.title }} — {{ site.config.site.title }}</title>
+  </head>
   <body>
     {{ page.html }}
   </body>
@@ -104,15 +115,15 @@ export default {
 
 ### Available hooks
 
-| Hook | Payload |
-|---|---|
-| `beforeBuild` | `{ config }` |
-| `afterDiscover` | `{ files, config }` |
-| `afterParse` | `{ pages, config }` |
+| Hook            | Payload                         |
+| --------------- | ------------------------------- |
+| `beforeBuild`   | `{ config }`                    |
+| `afterDiscover` | `{ files, config }`             |
+| `afterParse`    | `{ pages, config }`             |
 | `afterTaxonomy` | `{ pages, taxonomies, config }` |
-| `beforeRender` | `{ site }` |
-| `afterRender` | `{ site }` |
-| `afterBuild` | `{ site, duration }` |
+| `beforeRender`  | `{ site }`                      |
+| `afterRender`   | `{ site }`                      |
+| `afterBuild`    | `{ site, duration }`            |
 
 ## Programmatic API
 

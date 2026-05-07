@@ -3,7 +3,7 @@ export default {
   title: "Test Site",
   siteUrl: "https://test.example.com",
   description: "A fixture site for inkwell-ssg tests.",
-  taxonomies: [{ field: "tags", name: "Tags", urlPrefix: "/tags/" }],
+  taxonomies: [{ name: "tags", pageSize: 10 }],
   collections: [
     {
       name: "posts",

@@ -40,7 +40,7 @@ export function buildTaxonomies(
   const result: Record<string, Record<string, Term>> = {};
 
   for (const taxConfig of config.taxonomies) {
-    result[taxConfig.field] = buildTaxonomy(pages, taxConfig);
+    result[taxConfig.name] = buildTaxonomy(pages, taxConfig);
   }
 
   return result;
@@ -50,8 +50,8 @@ function buildTaxonomy(
   pages: Page[],
   taxConfig: TaxonomyConfig,
 ): Record<string, Term> {
-  const { field, urlPrefix } = taxConfig;
-  const prefix = urlPrefix ?? `/${field}/`;
+  const { name: field } = taxConfig;
+  const prefix = `/${field}/`;
   const termMap: Record<string, Term> = {};
 
   for (const page of pages) {
