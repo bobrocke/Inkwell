@@ -31,3 +31,5 @@ export { renderAll } from "./render/vento.js";
 export { PluginEmitter, createEmitter } from "./plugins.js";
 export { build } from "./build.js";
 export type { BuildOptions, BuildResult } from "./build.js";
+export { dev } from "./dev.js";
+export type { DevOptions } from "./dev.js";
