@@ -17,7 +17,7 @@ npx inkwell-ssg dev
 
 | Command | Description |
 |---|---|
-| `inkwell build` | Build the site into `published/` |
+| `inkwell build` | Build the site into `_published/` |
 | `inkwell dev` | Build, serve, and watch for changes (with live reload) |
 | `inkwell new <name>` | Scaffold a new site |
 
@@ -27,11 +27,11 @@ All commands accept `--cwd <path>` to run from a different directory. `inkwell d
 
 ```
 content/           → Markdown source files
-static/            → Copied verbatim to published/
+static/            → Copied verbatim to _published/
 templates/         → Vento templates
 assets/
   css/             → CSS files (processed by lightningcss)
-published/         → Build output
+_published/        → Build output
 inkwell.config.js  → Site configuration
 ```
 

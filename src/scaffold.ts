@@ -123,7 +123,25 @@ tags: [hello, inkwell]
 # Hello, World!
 
 Welcome to your new **inkwell-ssg** site. Edit this post in \`content/posts/hello-world.md\`
-or run \`inkwell dev\` to start the development server.
+or run \`inkwell serve\` to start the development server.
+
+## Syntax highlighting
+
+inkwell-ssg uses [Shiki](https://shiki.style/) to highlight code at build time — no JavaScript shipped to the browser.
+
+\`\`\`js
+// inkwell.config.js
+export default {
+  title: "My Site",
+  siteUrl: "https://example.com",
+  collections: [
+    { name: "posts", pattern: "posts/**", pageSize: 10 },
+  ],
+  taxonomies: [
+    { field: "tags", name: "Tags", urlPrefix: "/tags/" },
+  ],
+};
+\`\`\`
 `;
 
 const INDEX_PAGE = `---
@@ -137,7 +155,7 @@ This is the home page. Check out the [posts](/posts/) to get started.
 
 const GITIGNORE = `node_modules/
 dist/
-published/
+_published/
 `;
 
 // ── Main scaffold function ─────────────────────────────────────────────────────

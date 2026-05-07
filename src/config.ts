@@ -12,7 +12,7 @@ const DEFAULT_RSS: RssConfig = {
 const DEFAULTS = {
   description: "",
   contentDir: "content",
-  outputDir: "published",
+  outputDir: "_published",
   staticDir: "static",
   templatesDir: "templates",
   assetsDir: "assets",
