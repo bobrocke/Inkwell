@@ -33,3 +33,4 @@ export { build } from "./build.js";
 export type { BuildOptions, BuildResult } from "./build.js";
 export { dev } from "./dev.js";
 export type { DevOptions } from "./dev.js";
+export { scaffold } from "./scaffold.js";
