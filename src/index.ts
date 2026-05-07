@@ -25,3 +25,4 @@ export type { ListingResult } from "./listings.js";
 export { assembleSite } from "./site.js";
 export { processCss } from "./css.js";
 export { copyStaticAssets } from "./assets.js";
+export { generateRss } from "./rss.js";

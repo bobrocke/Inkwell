@@ -4,7 +4,7 @@
 
 A batteries-included static site generator for content-heavy sites. TypeScript, ESM, Node 20+. Published as `inkwell-ssg` on npm. Invoked via `npx inkwell-ssg`. Configured with a single `inkwell.config.js`.
 
-> Core philosophy: ship pagination, prev/next navigation, markdown parsing, taxonomies, EXIF, and syntax highlighting out of the box. No plugin hunting for essentials.
+> Core philosophy: ship pagination, prev/next navigation, markdown parsing, RSS, taxonomies, EXIF, and syntax highlighting out of the box. No plugin hunting for essentials.
 
 ## Tech stack
 
