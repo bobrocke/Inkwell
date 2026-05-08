@@ -4,6 +4,7 @@ import { consola } from "consola";
 import path from "node:path";
 import { execSync } from "node:child_process";
 
+consola.options.formatOptions = { ...consola.options.formatOptions, date: false };
 // ── install ────────────────────────────────────────────────────────────────────
 
 const installCmd = defineCommand({

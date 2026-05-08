@@ -40,6 +40,7 @@ const LAYOUT_TEMPLATE = `<!doctype html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Inkwell">
     <title>{{ title ?? site.config.title }}</title>
     <link rel="stylesheet" href="/css/style.css" />
   </head>
@@ -51,7 +52,7 @@ const LAYOUT_TEMPLATE = `<!doctype html>
       {{ content }}
     </main>
     <footer>
-      <p>Built with <a href="https://github.com/bobrocke/Inkwell">inkwell-ssg</a></p>
+      <p>Built with <a href="https://github.com/bobrocke/Inkwell">Inkwell</a></p>
     </footer>
   </body>
 </html>

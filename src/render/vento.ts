@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join, dirname } from "node:path";
 import vento from "ventojs";
+import { slugify } from "../taxonomy.js";
 import type { Page, Listing, Site, ResolvedConfig } from "../types.js";
 
 // ─── Engine setup ─────────────────────────────────────────────────────────────
@@ -86,6 +87,20 @@ async function write(path: string, html: string): Promise<void> {
   await writeFile(path, html, "utf-8");
 }
 
+// ─── Template helpers ─────────────────────────────────────────────────────────
+
+/**
+ * Build template helper functions scoped to the current site.
+ * These are injected into every template render call.
+ */
+function buildHelpers(site: Site) {
+  return {
+    /** Return the URL for a taxonomy term, e.g. termUrl("tags", "typescript") */
+    termUrl: (taxonomy: string, termName: string): string | undefined =>
+      site.taxonomies[taxonomy]?.[slugify(termName)]?.url,
+  };
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
@@ -112,10 +127,11 @@ async function renderPages(
   site: Site,
   config: ResolvedConfig,
 ): Promise<void> {
+  const helpers = buildHelpers(site);
   await Promise.all(
     site.pages.map(async (page) => {
       const templateName = resolvePageTemplate(page);
-      const html = await renderTemplate(engine, templateName, { page, site }, [
+      const html = await renderTemplate(engine, templateName, { page, site, ...helpers }, [
         "page.vto",
       ]);
       const outPath = urlToOutputPath(page.url, config.outputDir);
@@ -129,13 +145,14 @@ async function renderListings(
   site: Site,
   config: ResolvedConfig,
 ): Promise<void> {
+  const helpers = buildHelpers(site);
   await Promise.all(
     site.listings.map(async (listing) => {
       const [templateName, fallbacks] = resolveListingTemplate(listing);
       const html = await renderTemplate(
         engine,
         templateName,
-        { listing, site },
+        { listing, site, ...helpers },
         fallbacks,
       );
       const outPath = urlToOutputPath(listing.url, config.outputDir);
