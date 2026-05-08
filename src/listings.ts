@@ -123,6 +123,10 @@ function buildCollectionListings(
     const colConfig = config.collections.find(
       (c) => c.name.toLowerCase() === collectionName.toLowerCase(),
     );
+    const name = colConfig?.name ?? collectionName;
+    const title = colConfig
+      ? name
+      : name.charAt(0).toUpperCase() + name.slice(1);
     const pageSize = colConfig?.pageSize ?? config.pageSize;
     const sortBy = colConfig?.sort ?? "date";
     const sortDir = colConfig?.sortDir ?? "desc";
@@ -139,7 +143,7 @@ function buildCollectionListings(
         url: pageUrl(baseUrl, i + 1),
         pages: items,
         pagination,
-        title: colConfig?.name ?? collectionName,
+        title,
         collection: collectionName,
       });
     });

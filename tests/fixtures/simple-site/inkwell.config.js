@@ -7,7 +7,6 @@ export default {
   collections: [
     {
       name: "posts",
-      pattern: "posts/**",
       pageSize: 2,
     },
   ],

@@ -7,7 +7,8 @@ import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
 import { parse as parseYaml } from "yaml";
 import { visit } from "unist-util-visit";
-import { createHighlighter } from "shiki";
+import { createHighlighter, type LanguageRegistration } from "shiki";
+import ventoGrammar from "../grammars/vento.tmLanguage.json";
 import type { Node } from "unist";
 import type { Element, Root } from "hast";
 import type { Page, ResolvedConfig } from "../types.js";
@@ -61,7 +62,7 @@ let _processorPromise: Promise<AnyProcessor> | null = null;
 async function buildProcessor(langs: string[]): Promise<AnyProcessor> {
   const highlighter = await createHighlighter({
     themes: ["github-light", "github-dark"],
-    langs,
+    langs: [...langs, ventoGrammar as unknown as LanguageRegistration],
   });
   return unified()
     .use(remarkParse)

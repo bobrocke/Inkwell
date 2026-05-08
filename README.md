@@ -6,20 +6,18 @@ A batteries-included static site generator for content-heavy sites. TypeScript, 
 
 ## Quick start
 
-Start a new site from scratch (empty directory):
-
 ```bash
 mkdir my-site && cd my-site
-npx inkwell-ssg new .
+inkwell new .
 inkwell serve
 ```
 
-Or with a named subdirectory:
+Or scaffold into a named subdirectory:
 
 ```bash
-  npx inkwell-ssg new my-site
-  cd my-site
-  inkwell serve
+inkwell new my-site
+cd my-site
+inkwell serve
 ```
 
 ## Commands
@@ -27,19 +25,21 @@ Or with a named subdirectory:
 | Command              | Description                                            |
 | -------------------- | ------------------------------------------------------ |
 | `inkwell build`      | Build the site into `_published/`                      |
-| `inkwell dev`        | Build, serve, and watch for changes (with live reload) |
+| `inkwell serve`      | Build, serve, and watch for changes (with live reload) |
 | `inkwell new <name>` | Scaffold a new site                                    |
 
-All commands accept `--cwd <path>` to run from a different directory. `inkwell dev` also accepts `--port` and `--host`.
+All commands accept `--cwd <path>` to run from a different directory. `inkwell serve` also accepts `--port` and `--host`.
 
 ## Project layout
 
 ```
-content/           → Markdown source files
+content/
+  blog/           → Files here become the "blog" collection
 static/            → Copied verbatim to _published/
-templates/         → Vento templates
+templates/
+  _partials/       → Partial templates (included via {{ include }})
 assets/
-  css/             → CSS files (processed by lightningcss)
+  css/             → CSS files processed by lightningcss
 _published/        → Build output
 inkwell.config.js  → Site configuration
 ```
@@ -48,45 +48,107 @@ inkwell.config.js  → Site configuration
 
 ```js
 // inkwell.config.js
+/** @type {import('inkwell-ssg').InkwellConfig} */
 export default {
-  site: {
-    title: "My Site",
-    url: "https://example.com",
-    description: "My site description",
-  },
-  collections: [
-    {
-      name: "posts",
-      pattern: "posts/**/*.md",
-      sort: "date",
-      sortDir: "desc",
-      pageSize: 10,
-    },
+  title: "My Site",
+  siteUrl: "https://example.com",
+  description: "My site description",
+
+  taxonomies: [
+    { name: "tags", pageSize: 10 },
+    { name: "categories", pageSize: 10 },
   ],
-  taxonomies: [{ name: "tags", field: "tags" }],
+
+  collections: [{ name: "blog", pageSize: 10, sort: "date", sortDir: "desc" }],
+
   rss: {
     enabled: true,
-    title: "My Site Feed",
-    feedPath: "/rss.xml",
+    limit: 20,
   },
+
+  // Default languages: js, ts, python, php, html, erb, go, json, liquid, markdown, ruby, css, vento
+  // Add more as needed:
+  // shiki: {
+  //   langs: ["rust", "bash"],
+  // },
 };
 ```
 
+### Taxonomy config
+
+| Field      | Type     | Default    | Description                               |
+| ---------- | -------- | ---------- | ----------------------------------------- |
+| `name`     | `string` | —          | Frontmatter field, URL slug, display name |
+| `pageSize` | `number` | `pageSize` | Items per term listing page               |
+
+A taxonomy named `"tags"` reads the `tags` frontmatter field, generates pages at `/tags/`, `/tags/typescript/`, etc., and auto-capitalizes the display heading.
+
+### Collection config
+
+| Field      | Type                              | Default    | Description                         |
+| ---------- | --------------------------------- | ---------- | ----------------------------------- |
+| `name`     | `string`                          | —          | Matches the folder under `content/` |
+| `pageSize` | `number`                          | `pageSize` | Items per listing page              |
+| `sort`     | `"date" \| "title" \| "filename"` | `"date"`   | Sort field                          |
+| `sortDir`  | `"asc" \| "desc"`                 | `"desc"`   | Sort direction                      |
+
+A collection named `"blog"` reads all files under `content/blog/`, paginates them at `/blog/`, and assigns prev/next navigation.
+
 ## Templates
 
-Templates use [Vento](https://vento.js.org/). Each template receives a `page`, `site`, and (for listings) a `listing` variable.
+Templates use [Vento](https://vento.js.org/). Put shared markup in `templates/_partials/` and include it with `{{ include "_partials/layout.vto" { ... } }}`.
+
+Each template receives:
+
+| Variable  | Available in  | Description                                             |
+| --------- | ------------- | ------------------------------------------------------- |
+| `page`    | `page.vto`    | The current page                                        |
+| `listing` | `listing.vto` | Paginated list of pages or terms                        |
+| `site`    | All templates | Global context (pages, collections, taxonomies, config) |
+
+### Template resolution
+
+| File                           | Used for                                |
+| ------------------------------ | --------------------------------------- |
+| `templates/page.vto`           | All content pages                       |
+| `templates/listing.vto`        | Collection and taxonomy term listings   |
+| `templates/taxonomy-index.vto` | Taxonomy index pages (e.g. `/tags/`)    |
+| `templates/tags-index.vto`     | Index page for the `tags` taxonomy only |
+
+### Listing template variables
 
 ```html
-<!-- templates/page.vto -->
-<!doctype html>
-<html>
-  <head>
-    <title>{{ page.title }} — {{ site.config.site.title }}</title>
-  </head>
-  <body>
-    {{ page.html }}
-  </body>
-</html>
+<!-- templates/listing.vto -->
+<h1>{{ listing.title }}</h1>
+{{ for p of listing.pages }}
+<a href="{{ p.url }}">{{ p.title }}</a>
+{{ /for }} {{ if listing.pagination.prevUrl }}
+<a href="{{ listing.pagination.prevUrl }}">← Newer</a>
+{{ /if }} {{ if listing.pagination.nextUrl }}
+<a href="{{ listing.pagination.nextUrl }}">Older →</a>
+{{ /if }}
+```
+
+### Taxonomy index template variables
+
+```html
+<!-- templates/taxonomy-index.vto -->
+<h1>{{ listing.title }}</h1>
+{{ for term of listing.terms }}
+<a href="{{ term.url }}">{{ term.name }} ({{ term.count }})</a>
+{{ /for }}
+```
+
+## Syntax highlighting
+
+Inkwell uses [Shiki](https://shiki.style/) for build-time syntax highlighting. javascript, typescript, python, php, html, erb, go, json, liquid, markdown, ruby, css, and vento are highlighted 'out of the box.'
+
+To add languages beyond the defaults, set `shiki.langs` in your config — user-specified languages are **merged** with the defaults, not replaced:
+
+```js
+shiki: {
+  langs: ["rust", "bash", "elixir"],
+},
 ```
 
 ## Plugins
@@ -94,9 +156,7 @@ Templates use [Vento](https://vento.js.org/). Each template receives a `page`, `
 Plugins hook into the build pipeline via named hooks:
 
 ```js
-// inkwell.config.js
 export default {
-  // ...
   plugins: [
     {
       name: "my-plugin",
@@ -128,10 +188,9 @@ export default {
 ## Programmatic API
 
 ```ts
-import { build, dev, loadConfig } from "inkwell-ssg";
+import { build, dev } from "inkwell-ssg";
 
-const config = await loadConfig("/path/to/project");
-const result = await build(config);
+const result = await build({ cwd: "/path/to/project" });
 console.log(`Built ${result.site.pages.length} pages in ${result.duration}ms`);
 ```
 

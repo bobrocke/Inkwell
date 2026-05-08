@@ -123,9 +123,7 @@ export interface TaxonomyConfig {
 }
 
 export interface CollectionConfig {
-  /** Glob pattern relative to contentDir, e.g. "posts/**" */
-  pattern: string;
-  /** Collection name used as key in Site.collections */
+  /** Collection name — matches the top-level folder under contentDir (e.g. "posts" → content/posts/) */
   name: string;
   sort?: "date" | "title" | "filename";
   sortDir?: "asc" | "desc";

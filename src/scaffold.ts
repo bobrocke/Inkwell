@@ -19,11 +19,7 @@ export default {
   ],
 
   collections: [
-    {
-      name: "posts",
-      pattern: "posts/**",
-      pageSize: 10,
-    },
+    { name: "blog", pageSize: 10, sort: "date", sortDir: "desc" },
   ],
 
   rss: {
@@ -31,10 +27,10 @@ export default {
     limit: 20,
   },
 
-  // Default Shiki languages: javascript, typescript, php, html, erb, go, json, liquid, markdown, ruby, css
+  // Default Shiki languages: javascript, typescript, python, php, html, erb, go, json, liquid, markdown, ruby, css, vento
   // Add more languages as needed:
   // shiki: {
-  //   langs: ["python", "rust", "bash"],
+  //   langs: ["rust", "bash"],
   // },
 };
 `;
@@ -129,7 +125,7 @@ export default {
   title: "My Site",
   siteUrl: "https://example.com",
   collections: [
-    { name: "posts", pattern: "posts/**", pageSize: 10 },
+    { name: "posts", pageSize: 10 },
   ],
   taxonomies: [
     { name: "tags", pageSize: 10 },

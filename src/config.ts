@@ -10,7 +10,7 @@ const DEFAULT_RSS: RssConfig = {
 };
 
 const DEFAULT_SHIKI: Required<ShikiConfig> = {
-  langs: ["javascript", "typescript", "php", "html", "erb", "go", "json", "liquid", "markdown", "ruby", "css"],
+  langs: ["javascript", "typescript", "python", "php", "html", "erb", "go", "json", "liquid", "markdown", "ruby", "css"],
 };
 
 const DEFAULTS = {
