@@ -1,0 +1,271 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"Package Control: ",
+				"Package Control: Remove Package"
+			],
+			[
+				"",
+				"Terminus: Open Default Shell in Tab (View)"
+			],
+			[
+				"Package Control:",
+				"Package Control: Install Package"
+			],
+			[
+				"terminal",
+				"Terminus: Open Default Shell in Panel"
+			],
+			[
+				"copilot",
+				"Copilot: Chat"
+			],
+			[
+				"cop",
+				"Copilot: Chat"
+			],
+			[
+				"ayu",
+				"ayu: Activate theme"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"install ",
+				"Install Package Control"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 185.0,
+		"history":
+		[
+			"sublime.log_commands(False)",
+			"sublime.log_commands(false)",
+			"sublime.log_commands(True)",
+			"[f for f in sublime.find_resources('*.sublime-settings') if 'draw_white_space' in sublime.load_resource(f)]",
+			"[f for f in sublime.find_resources('*.py') if 'draw_white_space' in sublime.load_resource(f)]",
+			"pnpm serve"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/bob/Projects/Inkwell"
+	],
+	"file_history":
+	[
+		"/Users/bob/Projects/My Blog Inkwell/content/blog/hello-world.md",
+		"/Users/bob/Projects/My Blog Inkwell/content/index.md",
+		"/Users/bob/Projects/My Blog Inkwell/templates/page.vto",
+		"/Users/bob/Projects/My-Blog-Zola/sass/_global.scss",
+		"/Users/bob/Library/Application Support/Sublime Text/Packages/SideBarEnhancements/Side Bar.sublime-settings",
+		"/Users/bob/Library/Application Support/Sublime Text/Packages/User/Side Bar.sublime-settings",
+		"/Users/bob/.zshrc",
+		"/Users/bob/Sites/rails notes.txt",
+		"/Users/bob/.config/opencode/opencode.json",
+		"/Users/bob/.local/share/opencode/auth.json",
+		"/Users/bob/Documents/Development/Text Colors/Color System/code.njk",
+		"/Users/bob/Documents/Development/Text Colors/Color System/code.vto",
+		"/Users/bob/Documents/Development/Text Colors/Color System/colors.css",
+		"/Users/bob/Documents/Development/Text Colors/Color System/notes.md",
+		"/Users/bob/Documents/Development/Text Colors/Color System/code.css",
+		"/Users/bob/Documents/Development/Text Colors/Color System/code.html",
+		"/Users/bob/Documents/Development/Text Colors/Color System/code.liquid",
+		"/Users/bob/Documents/Development/Text Colors/Color System/code.gohtml",
+		"/Users/bob/Documents/Development/Text Colors/Color System/scratch.txt",
+		"/Users/bob/Documents/Development/Text Colors/Color System/code.js",
+		"/Users/bob/Sites/My Portfolio 11ty/eleventy.config.js",
+		"/Users/bob/Sites/My Portfolio 11ty/src/_includes/partials/menus.vto",
+		"/Users/bob/Sites/My Portfolio 11ty/package.json",
+		"/Users/bob/Library/Application Support/Sublime Text/Packages/User/One Dark.sublime-color-scheme",
+		"/Users/bob/Library/Application Support/Sublime Text/Packages/Theme - One/One Dark.sublime-color-scheme",
+		"/Users/bob/Library/Containers/cc.ffitch.shottr/Data/tmp/cc.ffitch.shottr/SCR-20251219-mlzm.png",
+		"/Users/bob/Sites/My Blog Hugo/layouts/page.html",
+		"/Users/bob/Sites/My Blog Zola/templates/includes/navigation.html",
+		"/Users/bob/Sites/My Portfolio 11ty/src/index.vto",
+		"/Users/bob/Sites/My Portfolio 11ty/ToDo.md",
+		"/Users/bob/Sites/My Portfolio 11ty/src/_includes/layouts/about.vto",
+		"/Users/bob/Library/Application Support/Sublime Text/Packages/User/One.sublime-theme",
+		"/Users/bob/Library/Application Support/Sublime Text/Packages/Theme - One/One.sublime-theme",
+		"/Users/bob/Sites/My Portfolio 11ty/src/_includes/layouts/base.vto",
+		"/Users/bob/Sites/My Portfolio 11ty/src/assets/css/global.css",
+		"/Users/bob/Sites/My Portfolio 11ty/punctuation.definition.embedded.begin.vento",
+		"/Users/bob/Sites/My Blog 11ty/src/tags.liquid",
+		"/Users/bob/Sites/My Blog 11ty/src/index.liquid",
+		"/Users/bob/Sites/My Blog Zola/templates/includes/post-meta-dates.html",
+		"/Users/bob/Library/Application Support/Sublime Text/Packages/User/Preferences.sublime-settings",
+		"/Users/bob/Library/Application Support/Sublime Text/Packages/Default/Preferences.sublime-settings",
+		"/Users/bob/Sites/My Blog Hugo/hugo.sublime-project"
+	],
+	"find":
+	{
+		"height": 67.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 33.0
+	},
+	"input":
+	{
+		"height": 44.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.LSP Log Panel":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"output.diagnostics":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"output.find_results":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"pinned_build_system": "",
+	"project": "Inkwell.sublime-project",
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": false,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 223.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
