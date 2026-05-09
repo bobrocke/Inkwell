@@ -79,7 +79,7 @@ async function buildProcessor(langs: string[]): Promise<AnyProcessor> {
     .use(remarkDefinitionList)
     .use(remarkDirective)
     .use(remarkMath)
-    .use(remarkSmartypants)
+    .use(remarkSmartypants, { dashes: 'oldschool' })
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings, { behavior: "wrap" })
