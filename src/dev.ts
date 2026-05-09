@@ -35,8 +35,9 @@ async function injectReloadSnippet(outputDir: string): Promise<void> {
     files.map(async (file) => {
       const html = await readFile(file, "utf8");
       if (html.includes(RELOAD_SCRIPT_PATH)) return; // already injected
-      const injected = html.replace("</body>", `${RELOAD_SNIPPET}\n</body>`);
-      await writeFile(file, injected, "utf8");
+      const injected = html.replace(/<\/body>/i, `${RELOAD_SNIPPET}\n</body>`);
+      // Fallback: no </body> found — append at end
+      await writeFile(file, injected === html ? html + "\n" + RELOAD_SNIPPET : injected, "utf8");
     }),
   );
 }
@@ -66,9 +67,24 @@ export async function dev(options: DevOptions = {}): Promise<void> {
 
   function broadcastReload() {
     for (const res of clients) {
-      res.write("event: reload\ndata: {}\n\n");
+      try {
+        res.write("event: reload\ndata: {}\n\n");
+      } catch {
+        clients.delete(res);
+      }
     }
   }
+
+  // Heartbeat keeps connections alive through proxies and idle timeouts
+  const heartbeat = setInterval(() => {
+    for (const res of clients) {
+      try {
+        res.write(":\n\n");
+      } catch {
+        clients.delete(res);
+      }
+    }
+  }, 15_000);
 
   // ── HTTP server ────────────────────────────────────────────────────────────
   const serve = sirv(config.outputDir, { dev: true, single: "404.html" });
@@ -84,7 +100,9 @@ export async function dev(options: DevOptions = {}): Promise<void> {
         Connection: "keep-alive",
         "Access-Control-Allow-Origin": "*",
       });
-      res.write(":\n\n"); // initial heartbeat comment
+      // Disable Nagle's algorithm so events flush immediately
+      req.socket.setNoDelay(true);
+      res.write(":\n\n"); // initial comment to confirm connection
       clients.add(res);
       req.on("close", () => clients.delete(res));
       return;
@@ -131,23 +149,34 @@ export async function dev(options: DevOptions = {}): Promise<void> {
 
   let rebuildTimer: ReturnType<typeof setTimeout> | null = null;
   let rebuilding = false;
+  let pendingRebuild = false;
+
+  const runRebuild = async (isConfig: boolean) => {
+    rebuilding = true;
+    pendingRebuild = false;
+    try {
+      resetEngine(); // always reset so template changes are never served from cache
+      if (isConfig) resetProcessor();
+      await build({ cwd, incremental: !isConfig });
+      await injectReloadSnippet(config.outputDir);
+      broadcastReload();
+    } catch (err) {
+      consola.error("Rebuild failed:", (err as Error).message);
+    } finally {
+      rebuilding = false;
+      if (pendingRebuild) await runRebuild(isConfig);
+    }
+  };
 
   const scheduleRebuild = (eventType: string, filePath: string, isConfig = false) => {
     consola.info(`Changed: ${path.relative(cwd, filePath)} (${eventType})`);
     if (rebuildTimer) clearTimeout(rebuildTimer);
     rebuildTimer = setTimeout(async () => {
-      if (rebuilding) return;
-      rebuilding = true;
-      try {
-        if (isConfig) { resetProcessor(); resetEngine(); }
-        await build({ cwd, incremental: !isConfig });
-        await injectReloadSnippet(config.outputDir);
-        broadcastReload();
-      } catch (err) {
-        consola.error("Rebuild failed:", (err as Error).message);
-      } finally {
-        rebuilding = false;
+      if (rebuilding) {
+        pendingRebuild = true;
+        return;
       }
+      await runRebuild(isConfig);
     }, 50);
   };
 
@@ -161,6 +190,7 @@ export async function dev(options: DevOptions = {}): Promise<void> {
   // ── Graceful shutdown ──────────────────────────────────────────────────────
   const shutdown = async () => {
     consola.info("Shutting down…");
+    clearInterval(heartbeat);
     if (rebuildTimer) clearTimeout(rebuildTimer);
     for (const res of clients) res.end();
     await watcher.close();
