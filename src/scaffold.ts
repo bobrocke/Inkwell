@@ -186,7 +186,7 @@ export async function scaffold(name: string, targetDir: string): Promise<void> {
 
   const files: Array<[string, string]> = [
     ["inkwell.config.js", CONFIG_TEMPLATE(name)],
-    ["templates/_partials/layout.vto", LAYOUT_TEMPLATE],
+    ["templates/partials/layout.vto", LAYOUT_TEMPLATE],
     ["templates/page.vto", PAGE_TEMPLATE],
     ["templates/listing.vto", LISTING_TEMPLATE],
     ["templates/taxonomy-index.vto", TAXONOMY_INDEX_TEMPLATE],
