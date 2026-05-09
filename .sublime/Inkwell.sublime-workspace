@@ -82,10 +82,14 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/bob/Projects/Inkwell"
+		"/Users/bob/Projects/Inkwell",
+		"/Users/bob/Projects/Inkwell/src",
+		"/Users/bob/Projects/Inkwell/src/grammars"
 	],
 	"file_history":
 	[
+		"/Users/bob/Projects/Inkwell/test",
+		"/Users/bob/Projects/Inkwell/tester",
 		"/Users/bob/Projects/My Blog Inkwell/content/blog/hello-world.md",
 		"/Users/bob/Projects/My Blog Inkwell/content/index.md",
 		"/Users/bob/Projects/My Blog Inkwell/templates/page.vto",
