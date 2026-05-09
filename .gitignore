@@ -3,3 +3,4 @@ dist/
 published/
 *.tgz
 .DS_Store
+.sublime/
