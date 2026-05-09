@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, writeFile, access } from "node:fs/promises";
 import { join, dirname } from "node:path";
 import vento from "ventojs";
 import { slugify } from "../taxonomy.js";
@@ -6,8 +6,21 @@ import type { Page, Listing, Site, ResolvedConfig } from "../types.js";
 
 // ─── Engine setup ─────────────────────────────────────────────────────────────
 
-function createEngine(templatesDir: string) {
-  return vento({ includes: templatesDir });
+let _engine: ReturnType<typeof vento> | null = null;
+let _engineTemplatesDir: string | null = null;
+
+function getEngine(templatesDir: string) {
+  if (!_engine || _engineTemplatesDir !== templatesDir) {
+    _engine = vento({ includes: templatesDir });
+    _engineTemplatesDir = templatesDir;
+  }
+  return _engine;
+}
+
+/** Reset the Vento engine singleton (e.g. after a config change in dev mode). */
+export function resetEngine(): void {
+  _engine = null;
+  _engineTemplatesDir = null;
 }
 
 // ─── Template resolution ──────────────────────────────────────────────────────
@@ -56,34 +69,52 @@ function urlToOutputPath(url: string, outputDir: string): string {
 
 // ─── Render helpers ───────────────────────────────────────────────────────────
 
-type Engine = ReturnType<typeof createEngine>;
+type Engine = ReturnType<typeof vento>;
+
+async function templateExists(templatesDir: string, name: string): Promise<boolean> {
+  try {
+    await access(join(templatesDir, name));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function resolveTemplate(
+  templatesDir: string,
+  preferred: string,
+  fallbacks: string[],
+): Promise<string> {
+  for (const name of [preferred, ...fallbacks]) {
+    if (await templateExists(templatesDir, name)) return name;
+  }
+  throw new Error(`No template found. Tried: ${[preferred, ...fallbacks].join(", ")}`);
+}
 
 async function renderTemplate(
   engine: Engine,
+  templatesDir: string,
   templateName: string,
   data: Record<string, unknown>,
   fallbacks: string[],
 ): Promise<string> {
-  const candidates = [templateName, ...fallbacks];
-
-  for (const name of candidates) {
-    try {
-      const result = await engine.run(name, data);
-      return result.content;
-    } catch (err) {
-      const code = (err as NodeJS.ErrnoException).code;
-      if (code === "ENOENT") continue; // template not found, try next
-      throw new Error(`Template error in "${name}": ${(err as Error).message}`);
-    }
+  const resolved = await resolveTemplate(templatesDir, templateName, fallbacks);
+  try {
+    const result = await engine.run(resolved, data);
+    return result.content;
+  } catch (err) {
+    throw new Error(`Template error in "${resolved}": ${(err as Error).message}`);
   }
-
-  throw new Error(
-    `No template found. Tried: ${candidates.join(", ")}`,
-  );
 }
 
+const _createdDirs = new Set<string>();
+
 async function write(path: string, html: string): Promise<void> {
-  await mkdir(dirname(path), { recursive: true });
+  const dir = dirname(path);
+  if (!_createdDirs.has(dir)) {
+    await mkdir(dir, { recursive: true });
+    _createdDirs.add(dir);
+  }
   await writeFile(path, html, "utf-8");
 }
 
@@ -114,7 +145,8 @@ export async function renderAll(
   site: Site,
   config: ResolvedConfig,
 ): Promise<void> {
-  const engine = createEngine(config.templatesDir);
+  const engine = getEngine(config.templatesDir);
+  _createdDirs.clear();
 
   await Promise.all([
     renderPages(engine, site, config),
@@ -131,7 +163,7 @@ async function renderPages(
   await Promise.all(
     site.pages.map(async (page) => {
       const templateName = resolvePageTemplate(page);
-      const html = await renderTemplate(engine, templateName, { page, site, ...helpers }, [
+      const html = await renderTemplate(engine, config.templatesDir, templateName, { page, site, ...helpers }, [
         "page.vto",
       ]);
       const outPath = urlToOutputPath(page.url, config.outputDir);
@@ -151,6 +183,7 @@ async function renderListings(
       const [templateName, fallbacks] = resolveListingTemplate(listing);
       const html = await renderTemplate(
         engine,
+        config.templatesDir,
         templateName,
         { listing, site, ...helpers },
         fallbacks,

@@ -151,6 +151,43 @@ shiki: {
 },
 ```
 
+## Markdown features
+
+Inkwell supports an extended markdown syntax out of the box:
+
+| Feature | Syntax |
+|---|---|
+| GFM tables | `\| col \| col \|` |
+| GFM task lists | `- [x] done` |
+| GFM strikethrough | `~~text~~` |
+| GFM footnotes | `[^1]` / `[^1]: note` |
+| Definition lists | `Term\n: Definition` |
+| Directives | `:::note` … `:::` |
+| Math (inline) | `$E = mc^2$` |
+| Math (block) | `$$` … `$$` |
+| Smart quotes | `"hello"` → `"hello"` |
+| Heading anchors | Auto-generated `id` + self-link on every heading |
+
+### Math (KaTeX)
+
+Math is rendered at build time via [KaTeX](https://katex.org/). To display it correctly, add the KaTeX stylesheet to your base template:
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+```
+
+### Directives
+
+Directives let you create custom containers in markdown:
+
+```md
+:::note
+This is a note.
+:::
+```
+
+The directive syntax is parsed but rendering is controlled by your templates/CSS — add a rehype plugin via the Inkwell plugin API to transform directive nodes into the HTML structure you want.
+
 ## Plugins
 
 Plugins hook into the build pipeline via named hooks:

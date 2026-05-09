@@ -8,6 +8,7 @@ import fg from "fast-glob";
 import { loadConfig } from "./config.js";
 import { build } from "./build.js";
 import { resetProcessor } from "./content/parse.js";
+import { resetEngine } from "./render/vento.js";
 import type { ResolvedConfig } from "./types.js";
 
 export interface DevOptions {
@@ -138,7 +139,7 @@ export async function dev(options: DevOptions = {}): Promise<void> {
       if (rebuilding) return;
       rebuilding = true;
       try {
-        if (isConfig) resetProcessor();
+        if (isConfig) { resetProcessor(); resetEngine(); }
         await build({ cwd, incremental: !isConfig });
         await injectReloadSnippet(config.outputDir);
         broadcastReload();

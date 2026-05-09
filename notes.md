@@ -86,3 +86,9 @@ npm install ../my-package/my-package-1.0.0.tgz
 `npm pack`: Testing the exact publish artifact
 
 `npm link` is the most common workflow for active development since changes to your package are reflected immediately (if no build step is needed). Use `file:` for simpler setups or monorepos.
+
+
+/Users/bob/.copilot/session-state/f3ece444-9b2c-4dff-abf4-7990c253c525/fi
+les/context.md
+
+/Users/bob/Projects/Inkwell/notes.md

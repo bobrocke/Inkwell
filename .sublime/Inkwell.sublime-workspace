@@ -21,7 +21,7 @@
 		[
 			[
 				"Package Control: ",
-				"Package Control: Remove Package"
+				"Package Control: Enable Package"
 			],
 			[
 				"",
@@ -258,6 +258,7 @@
 	"selected_group": 0,
 	"settings":
 	{
+		"lsp_show_inlay_hints": false
 	},
 	"show_minimap": false,
 	"show_open_files": true,

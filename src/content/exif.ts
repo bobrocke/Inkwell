@@ -74,6 +74,11 @@ export async function enrichWithExif(
   page: Page,
   config: ResolvedConfig,
 ): Promise<Page> {
+  const hasMedia = MEDIA_FIELDS.some(
+    (field) => toArray(page.frontmatter[field]).length > 0,
+  );
+  if (!hasMedia) return page;
+
   const mediaFiles: MediaFile[] = [];
 
   for (const field of MEDIA_FIELDS) {

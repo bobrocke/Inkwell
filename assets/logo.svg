@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">
+  <defs>
+    <linearGradient id="lg-glass" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#93c5fd" stop-opacity="0.85"/>
+      <stop offset="20%"  stop-color="#eff6ff" stop-opacity="0.95"/>
+      <stop offset="80%"  stop-color="#eff6ff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#60a5fa" stop-opacity="0.85"/>
+    </linearGradient>
+    <linearGradient id="lg-ink" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%"   stop-color="#4338ca"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
+    </linearGradient>
+    <!-- clip path covers the full bottle interior: neck + shoulders + body -->
+    <clipPath id="cp-bottle">
+      <path d="M108,114 L74,134 L74,264 Q74,276 85,276 L215,276 Q226,276 226,264 L226,134 L192,114 L192,86 L108,86 Z"/>
+    </clipPath>
+    <!-- pen barrel: horizontal gradient for cylindrical shading -->
+    <linearGradient id="pen-barrel" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#1e1b4b"/>
+      <stop offset="28%"  stop-color="#3730a3"/>
+      <stop offset="52%"  stop-color="#4f46e5"/>
+      <stop offset="75%"  stop-color="#3730a3"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
+    </linearGradient>
+    <!-- pen nib: horizontal gold gradient -->
+    <linearGradient id="pen-nib" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#78350f"/>
+      <stop offset="35%"  stop-color="#fbbf24"/>
+      <stop offset="62%"  stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#7c2d12"/>
+    </linearGradient>
+  </defs>
+
+  <!-- drop shadow -->
+  <ellipse cx="150" cy="283" rx="72" ry="9" fill="#1e1b4b" opacity="0.10"/>
+
+  <!-- bottle body -->
+  <path d="M74,134 L74,264 Q74,276 85,276 L215,276 Q226,276 226,264 L226,134 Z"
+        fill="url(#lg-glass)" stroke="#7ab5e0" stroke-width="2.5"/>
+
+  <!-- shoulders (taper from body width to neck width) -->
+  <path d="M108,114 L74,134 L226,134 L192,114 Z"
+        fill="url(#lg-glass)" stroke="#7ab5e0" stroke-width="2.5"/>
+
+  <!-- neck -->
+  <rect x="108" y="86" width="84" height="30" rx="5"
+        fill="url(#lg-glass)" stroke="#7ab5e0" stroke-width="2.5"/>
+
+  <!-- neck rim/lip (open top — no cap, pen dips in) -->
+  <rect x="105" y="83" width="90" height="8" rx="4"
+        fill="url(#lg-glass)" stroke="#7ab5e0" stroke-width="2"/>
+
+  <!-- ink fill, clipped to bottle interior -->
+  <g clip-path="url(#cp-bottle)">
+    <path d="M73,196 Q100,185 127,196 Q154,207 181,196 Q208,185 227,196 L227,278 L73,278 Z"
+          fill="url(#lg-ink)"/>
+    <!-- ink surface shimmer -->
+    <path d="M73,196 Q100,185 127,196 Q154,207 181,196 Q208,185 227,196"
+          fill="none" stroke="#6366f1" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+  </g>
+
+  <!-- code symbol floating in the ink -->
+  <text x="153" y="238"
+        text-anchor="middle" dominant-baseline="middle"
+        font-family="'Courier New', Courier, monospace"
+        font-size="30" font-weight="700"
+        fill="#c7d2fe" opacity="0.92">&lt;/&gt;</text>
+
+  <!-- glass highlights -->
+  <rect x="83"  y="138" width="9" height="96" rx="4.5" fill="white" opacity="0.38"/>
+  <rect x="117" y="89"  width="6" height="22" rx="3"   fill="white" opacity="0.35"/>
+
+  <!-- ===================== FOUNTAIN PEN ===================== -->
+  <!-- Pen is drawn in its own coordinate space (vertical, nib at bottom),
+       then rotated -20° and translated to lean over the inkwell.
+       Nib tip lands at ~(187, 229) — inside the ink.
+       Pen top lands at ~(111, 20)  — above the bottle. -->
+  <g transform="translate(150, 128) rotate(-20)">
+
+    <!-- Finial (top of pen) -->
+    <rect x="-9" y="-122" width="18" height="14" rx="7"  fill="#6366f1"/>
+    <rect x="-9" y="-110" width="18" height="5"  rx="2"  fill="#312e81"/>
+
+    <!-- Main barrel -->
+    <rect x="-9" y="-107" width="18" height="172" rx="9" fill="url(#pen-barrel)"/>
+
+    <!-- Barrel left-edge shine (cylindrical highlight) -->
+    <rect x="-7.5" y="-99" width="4" height="158" rx="2" fill="white" opacity="0.16"/>
+
+    <!-- Clip (metal strip along barrel) -->
+    <rect x="-13"  y="-106" width="5"  height="126" rx="2.5" fill="#94a3b8"/>
+    <rect x="-13"  y="-112" width="5"  height="10"  rx="2.5" fill="#cbd5e1"/>
+    <circle cx="-10.5" cy="22" r="5" fill="#94a3b8"/>
+
+    <!-- Band ring at barrel base -->
+    <rect x="-10" y="57" width="20" height="6" rx="3" fill="#312e81"/>
+
+    <!-- Section / grip -->
+    <rect x="-8" y="61" width="16" height="24" rx="3" fill="#1e293b"/>
+    <line x1="-6" y1="66" x2="6" y2="66" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>
+    <line x1="-6" y1="71" x2="6" y2="71" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>
+    <line x1="-6" y1="76" x2="6" y2="76" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>
+    <line x1="-6" y1="81" x2="6" y2="81" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>
+
+    <!-- Nib collar -->
+    <rect x="-9.5" y="83" width="19" height="5" rx="2.5" fill="#334155"/>
+
+    <!-- Nib (gold triangle, widest element — very visible) -->
+    <polygon points="0,118  -10,87  10,87" fill="url(#pen-nib)"/>
+    <!-- Nib center slit -->
+    <line x1="0" y1="118" x2="0" y2="90"
+          stroke="#92400e" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- Nib left shine facet -->
+    <polygon points="-2,104 -7,87 -2,87" fill="rgba(255,255,255,0.22)"/>
+
+    <!-- Ink bead at nib tip (freshly dipped) -->
+    <ellipse cx="0" cy="119" rx="3" ry="4" fill="#4338ca" opacity="0.9"/>
+
+  </g>
+  <!-- ======================================================= -->
+</svg>
