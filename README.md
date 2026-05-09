@@ -188,18 +188,9 @@ Inkwell supports an extended markdown syntax out of the box:
 | GFM footnotes | `[^1]` / `[^1]: note` |
 | Definition lists | `Term\n: Definition` |
 | Directives | `:::note` … `:::` |
-| Math (inline) | `$E = mc^2$` |
-| Math (block) | `$$` … `$$` |
 | Smart quotes | `"hello"` → `"hello"` |
+| Em / en dashes | `---` / `--` |
 | Heading anchors | Auto-generated `id` + self-link on every heading |
-
-### Math (KaTeX)
-
-Math is rendered at build time via [KaTeX](https://katex.org/). To display it correctly, add the KaTeX stylesheet to your base template:
-
-```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
-```
 
 ### Directives
 
@@ -212,6 +203,19 @@ This is a note.
 ```
 
 The directive syntax is parsed but rendering is controlled by your templates/CSS — add a rehype plugin via the Inkwell plugin API to transform directive nodes into the HTML structure you want.
+
+### Math (not built-in)
+
+Math rendering is not included by default. If you need it, add `remark-math` and `rehype-katex` via a plugin:
+
+```js
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+
+export default {
+  plugins: [{ name: "math", hooks: { /* add to unified pipeline */ } }],
+};
+```
 
 ## Plugins
 

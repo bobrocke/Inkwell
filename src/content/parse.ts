@@ -7,11 +7,9 @@ import remarkGfm from "remark-gfm";
 import remarkDefinitionList from "remark-definition-list";
 import remarkSmartypants from "@silvenon/remark-smartypants";
 import remarkDirective from "remark-directive";
-import remarkMath from "remark-math";
 import remarkRehype from "remark-rehype";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import rehypeKatex from "rehype-katex";
 import rehypeStringify from "rehype-stringify";
 import { parse as parseYaml } from "yaml";
 import { visit } from "unist-util-visit";
@@ -78,12 +76,10 @@ async function buildProcessor(langs: string[]): Promise<AnyProcessor> {
     .use(remarkGfm)
     .use(remarkDefinitionList)
     .use(remarkDirective)
-    .use(remarkMath)
     .use(remarkSmartypants, { dashes: 'oldschool' })
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings, { behavior: "wrap" })
-    .use(rehypeKatex, { strict: false })
     .use(makeRehypeShiki(highlighter))
     .use(rehypeStringify, { allowDangerousHtml: true });
 }
