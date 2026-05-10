@@ -15,7 +15,8 @@ const FIXTURE = path.resolve(
 async function loadFixture() {
   const config = await loadConfig(FIXTURE);
   const files = await discoverContent(config);
-  const pages = await parseContent(files, config);
+  const allPages = await parseContent(files, config);
+  const pages = allPages.filter((p) => !p.draft);
   return { config, pages };
 }
 

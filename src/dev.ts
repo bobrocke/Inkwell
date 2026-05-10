@@ -18,13 +18,16 @@ export interface DevOptions {
   port?: number;
   /** Hostname to bind. Defaults to "localhost". */
   host?: string;
+  /** Include pages marked `draft: true`. Defaults to false. */
+  includeDrafts?: boolean;
 }
 
 const RELOAD_EVENTS_PATH = "/__inkwell/events";
 const RELOAD_SCRIPT_PATH = "/__inkwell/reload.js";
 
-/** Tiny browser script: connect to SSE and reload on event. */
-const RELOAD_CLIENT = `new EventSource('${RELOAD_EVENTS_PATH}').addEventListener('reload',()=>location.reload());`;
+/** Tiny browser script: reload on file-change event; also reload if the SSE
+ *  connection was previously lost (server restart). */
+const RELOAD_CLIENT = `(function(){var r=false;var es=new EventSource('${RELOAD_EVENTS_PATH}');es.onopen=function(){if(r){location.reload();}};es.onerror=function(){r=true;};es.addEventListener('reload',function(){location.reload();});})();`;
 
 const RELOAD_SNIPPET = `<script src="${RELOAD_SCRIPT_PATH}"></script>`;
 
@@ -54,11 +57,12 @@ export async function dev(options: DevOptions = {}): Promise<void> {
   const cwd = options.cwd ?? process.cwd();
   const port = options.port ?? 3000;
   const host = options.host ?? "localhost";
+  const includeDrafts = options.includeDrafts ?? false;
 
   consola.info("Starting inkwell dev server…");
 
   // ── Initial build ──────────────────────────────────────────────────────────
-  const result = await build({ cwd });
+  const result = await build({ cwd, includeDrafts });
   const config: ResolvedConfig = result.config;
   await injectReloadSnippet(config.outputDir);
 
@@ -157,7 +161,7 @@ export async function dev(options: DevOptions = {}): Promise<void> {
     try {
       resetEngine(); // always reset so template changes are never served from cache
       if (isConfig) resetProcessor();
-      await build({ cwd, incremental: !isConfig });
+      await build({ cwd, incremental: !isConfig, includeDrafts });
       await injectReloadSnippet(config.outputDir);
       broadcastReload();
     } catch (err) {

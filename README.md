@@ -26,9 +26,10 @@ inkwell serve
 | -------------------- | ------------------------------------------------------ |
 | `inkwell build`      | Build the site into `_published/`                      |
 | `inkwell serve`      | Build, serve, and watch for changes (with live reload) |
+| `inkwell serve-d`    | Like `serve`, but includes pages with `draft: true`    |
 | `inkwell new <name>` | Scaffold a new site                                    |
 
-All commands accept `--cwd <path>` to run from a different directory. `inkwell serve` also accepts `--port` and `--host`.
+All commands accept `--cwd <path>` to run from a different directory. `inkwell serve` and `inkwell serve-d` also accept `--port` and `--host`.
 
 ## Project layout
 
@@ -102,9 +103,26 @@ Each template receives:
 
 | Variable  | Available in  | Description                                             |
 | --------- | ------------- | ------------------------------------------------------- |
-| `page`    | `page.vto`    | The current page                                        |
-| `listing` | `listing.vto` | Paginated list of pages or terms                        |
+| `page`    | page templates | The current page                                       |
+| `listing` | listing templates | Paginated list of pages or terms                  |
 | `site`    | All templates | Global context (pages, collections, taxonomies, config) |
+
+### Page variables
+
+| Variable | Description |
+|---|---|
+| `page.url` | Root-relative URL, e.g. `/posts/hello-world/` |
+| `page.src` | Source file path relative to `contentDir` |
+| `page.title` | From frontmatter, falls back to filename |
+| `page.date` | `Date` object from frontmatter |
+| `page.lastmod` | `Date` object from frontmatter `lastmod` field (optional) |
+| `page.draft` | `true` if the page is a draft; omitted from `build` and `serve` |
+| `page.html` | Rendered HTML body |
+| `page.excerpt` | First paragraph, plain text |
+| `page.collection` | Collection name, e.g. `"posts"` |
+| `page.prev` / `page.next` | Adjacent pages in collection order |
+| `page.media` | EXIF-enriched media files from frontmatter |
+| `page.frontmatter.*` | All raw frontmatter fields — use this for arbitrary metadata (e.g. `page.frontmatter.author`, `page.frontmatter.hero`) |
 
 ### Template resolution
 

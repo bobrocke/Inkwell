@@ -171,6 +171,9 @@ async function parseFileInternal(
   const title = String(frontmatter.title ?? basename(filePath, ".md"));
   const rawDate = frontmatter.date;
   const date = rawDate ? new Date(rawDate as string) : undefined;
+  const rawLastmod = frontmatter.lastmod;
+  const lastmod = rawLastmod ? new Date(rawLastmod as string) : undefined;
+  const draft = frontmatter.draft === true ? true : undefined;
   const excerpt = String(frontmatter.excerpt ?? extractExcerpt(html));
 
   // Derive collection name from top-level directory inside contentDir
@@ -182,6 +185,8 @@ async function parseFileInternal(
     src: rel,
     title,
     date,
+    lastmod,
+    draft,
     html,
     excerpt,
     frontmatter,

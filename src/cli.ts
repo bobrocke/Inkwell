@@ -86,6 +86,39 @@ const serveCmd = defineCommand({
   },
 });
 
+// ── serve-d ────────────────────────────────────────────────────────────────────
+
+const serveDraftCmd = defineCommand({
+  meta: {
+    name: "serve-d",
+    description: "Start the development server, including draft pages",
+  },
+  args: {
+    port: {
+      type: "string",
+      description: "Port to listen on (default: 3000)",
+    },
+    host: {
+      type: "string",
+      description: "Hostname to bind (default: localhost)",
+    },
+    cwd: {
+      type: "string",
+      description: "Project root directory (default: cwd)",
+    },
+  },
+  async run({ args }) {
+    const { dev } = await import("./dev.js");
+    const port = args.port ? parseInt(args.port, 10) : 3000;
+    try {
+      await dev({ cwd: args.cwd ?? process.cwd(), port, host: args.host, includeDrafts: true });
+    } catch (err) {
+      consola.error((err as Error).message);
+      process.exit(1);
+    }
+  },
+});
+
 // ── new ────────────────────────────────────────────────────────────────────────
 
 const newCmd = defineCommand({
@@ -137,6 +170,7 @@ const main = defineCommand({
     install: installCmd,
     build: buildCmd,
     serve: serveCmd,
+    "serve-d": serveDraftCmd,
     new: newCmd,
   },
 });

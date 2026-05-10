@@ -29,6 +29,10 @@ export interface Page {
   src: string;
   title: string;
   date?: Date;
+  /** Last modified date from frontmatter `lastmod` field */
+  lastmod?: Date;
+  /** When true, this page is a draft and excluded from production builds */
+  draft?: boolean;
   /** Fully rendered HTML body */
   html: string;
   /** First paragraph or explicit `excerpt` frontmatter field */

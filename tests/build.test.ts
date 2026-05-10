@@ -104,4 +104,28 @@ describe("build (integration)", () => {
     const { site } = await build({ cwd: FIXTURE, incremental: true });
     expect(site.pages.length).toBeGreaterThan(0);
   });
+
+  it("excludes draft pages by default", async () => {
+    const { site } = await build({ cwd: FIXTURE });
+    const urls = site.pages.map((p) => p.url);
+    expect(urls).not.toContain("/posts/draft-post/");
+  });
+
+  it("does not write output file for draft pages", async () => {
+    const config = await loadConfig(FIXTURE);
+    await build({ cwd: FIXTURE });
+    expect(existsSync(path.join(config.outputDir, "posts/draft-post/index.html"))).toBe(false);
+  });
+
+  it("includes draft pages when includeDrafts is true", async () => {
+    const { site } = await build({ cwd: FIXTURE, includeDrafts: true });
+    const urls = site.pages.map((p) => p.url);
+    expect(urls).toContain("/posts/draft-post/");
+  });
+
+  it("writes output file for draft pages when includeDrafts is true", async () => {
+    const config = await loadConfig(FIXTURE);
+    await build({ cwd: FIXTURE, includeDrafts: true });
+    expect(existsSync(path.join(config.outputDir, "posts/draft-post/index.html"))).toBe(true);
+  });
 });

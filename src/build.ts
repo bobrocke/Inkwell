@@ -19,6 +19,8 @@ export interface BuildOptions {
   cwd?: string;
   /** Skip clearing the output directory before building. */
   incremental?: boolean;
+  /** Include pages marked `draft: true` in the build. Defaults to false. */
+  includeDrafts?: boolean;
 }
 
 export interface BuildResult {
@@ -46,6 +48,7 @@ export interface BuildResult {
 export async function build(options: BuildOptions = {}): Promise<BuildResult> {
   const start = Date.now();
   const cwd = options.cwd ?? process.cwd();
+  const includeDrafts = options.includeDrafts ?? false;
 
   // ── 1. Config ───────────────────────────────────────────────────────────────
   consola.start("Loading config…");
@@ -73,7 +76,12 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
 
   // ── 5. EXIF ─────────────────────────────────────────────────────────────────
   consola.start("Extracting EXIF…");
-  const pages = await enrichAllWithExif(rawPages, config);
+  const enriched = await enrichAllWithExif(rawPages, config);
+  const pages = includeDrafts ? enriched : enriched.filter((p) => !p.draft);
+  if (!includeDrafts) {
+    const draftCount = enriched.length - pages.length;
+    if (draftCount > 0) consola.info(`Skipping ${draftCount} draft page(s)`);
+  }
   await emitter.emit("afterParse", { pages, config });
 
   // ── 6. Taxonomy ─────────────────────────────────────────────────────────────

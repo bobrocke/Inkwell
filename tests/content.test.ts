@@ -70,4 +70,20 @@ describe("parseFile", () => {
     expect(page.url).toBe("/");
     expect(page.collection).toBeUndefined();
   });
+
+  it("parses draft: true from frontmatter", async () => {
+    const config = await loadConfig(FIXTURE);
+    const file = path.join(FIXTURE, "content/posts/draft-post.md");
+    const page = await parseFile(file, config);
+
+    expect(page.draft).toBe(true);
+  });
+
+  it("leaves draft undefined when not set", async () => {
+    const config = await loadConfig(FIXTURE);
+    const file = path.join(FIXTURE, "content/posts/alpha.md");
+    const page = await parseFile(file, config);
+
+    expect(page.draft).toBeUndefined();
+  });
 });
