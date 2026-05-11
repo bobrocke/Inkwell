@@ -113,12 +113,12 @@ categories: [general]
 
 # Hello, World!
 
-Welcome to your new **inkwell-ssg** site. Edit this post in \`content/posts/hello-world.md\`
+Welcome to your new **Inkwell** site. Edit this post in \`content/posts/hello-world.md\`
 or run \`inkwell serve\` to start the development server.
 
 ## Syntax highlighting
 
-inkwell-ssg uses [Shiki](https://shiki.style/) to highlight code at build time — no JavaScript shipped to the browser.
+inkwell-ssg uses [Shiki](https://shiki.style/) to highlight code at build time — no JavaScript is shipped to the browser.
 
 \`\`\`js
 // inkwell.config.js
