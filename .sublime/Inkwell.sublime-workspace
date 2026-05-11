@@ -7,6 +7,17 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "/Users/bob/Projects/Inkwell/agents.md",
+			"file_size": 1743,
+			"file_write_time": 134226661740369264,
+			"settings":
+			{
+				"buffer_size": 1729,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -21,54 +32,24 @@
 		[
 			[
 				"Package Control: ",
-				"Package Control: Enable Package"
+				"Package Control: Remove Package"
 			],
 			[
-				"",
-				"Terminus: Open Default Shell in Tab (View)"
-			],
-			[
-				"Package Control:",
+				"Package Control: i",
 				"Package Control: Install Package"
 			],
 			[
-				"terminal",
-				"Terminus: Open Default Shell in Panel"
-			],
-			[
-				"copilot",
-				"Copilot: Chat"
-			],
-			[
-				"cop",
-				"Copilot: Chat"
-			],
-			[
-				"ayu",
-				"ayu: Activate theme"
-			],
-			[
-				"install",
+				"instal",
 				"Package Control: Install Package"
-			],
-			[
-				"install ",
-				"Install Package Control"
 			]
 		],
 		"width": 0.0
 	},
 	"console":
 	{
-		"height": 185.0,
+		"height": 112.0,
 		"history":
 		[
-			"sublime.log_commands(False)",
-			"sublime.log_commands(false)",
-			"sublime.log_commands(True)",
-			"[f for f in sublime.find_resources('*.sublime-settings') if 'draw_white_space' in sublime.load_resource(f)]",
-			"[f for f in sublime.find_resources('*.py') if 'draw_white_space' in sublime.load_resource(f)]",
-			"pnpm serve"
 		]
 	},
 	"distraction_free":
@@ -82,60 +63,24 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/bob/Projects/Inkwell",
-		"/Users/bob/Projects/Inkwell/src",
-		"/Users/bob/Projects/Inkwell/src/grammars"
+		"/Users/bob/Projects/Inkwell"
 	],
 	"file_history":
 	[
-		"/Users/bob/Projects/Inkwell/test",
-		"/Users/bob/Projects/Inkwell/tester",
-		"/Users/bob/Projects/My Blog Inkwell/content/blog/hello-world.md",
-		"/Users/bob/Projects/My Blog Inkwell/content/index.md",
-		"/Users/bob/Projects/My Blog Inkwell/templates/page.vto",
-		"/Users/bob/Projects/My-Blog-Zola/sass/_global.scss",
-		"/Users/bob/Library/Application Support/Sublime Text/Packages/SideBarEnhancements/Side Bar.sublime-settings",
-		"/Users/bob/Library/Application Support/Sublime Text/Packages/User/Side Bar.sublime-settings",
+		"/Users/bob/Projects/My Blog Zola/zola_notes.md",
+		"/Users/bob/Projects/My Blog Zola/sass/_semantics.scss",
+		"/Users/bob/Projects/My Blog Zola/sass/_CUBE.scss",
+		"/Users/bob/Projects/My Blog Zola/templates/about.html",
+		"/Users/bob/Downloads/context-audit/SKILL.md",
+		"/Users/bob/Library/Application Support/Sublime Text/Packages/User/Package Control.sublime-settings",
+		"/Users/bob/Library/Application Support/Sublime Text/Packages/Package Control/Package Control.sublime-settings",
 		"/Users/bob/.zshrc",
-		"/Users/bob/Sites/rails notes.txt",
-		"/Users/bob/.config/opencode/opencode.json",
-		"/Users/bob/.local/share/opencode/auth.json",
-		"/Users/bob/Documents/Development/Text Colors/Color System/code.njk",
-		"/Users/bob/Documents/Development/Text Colors/Color System/code.vto",
-		"/Users/bob/Documents/Development/Text Colors/Color System/colors.css",
-		"/Users/bob/Documents/Development/Text Colors/Color System/notes.md",
-		"/Users/bob/Documents/Development/Text Colors/Color System/code.css",
-		"/Users/bob/Documents/Development/Text Colors/Color System/code.html",
-		"/Users/bob/Documents/Development/Text Colors/Color System/code.liquid",
-		"/Users/bob/Documents/Development/Text Colors/Color System/code.gohtml",
-		"/Users/bob/Documents/Development/Text Colors/Color System/scratch.txt",
-		"/Users/bob/Documents/Development/Text Colors/Color System/code.js",
-		"/Users/bob/Sites/My Portfolio 11ty/eleventy.config.js",
-		"/Users/bob/Sites/My Portfolio 11ty/src/_includes/partials/menus.vto",
-		"/Users/bob/Sites/My Portfolio 11ty/package.json",
-		"/Users/bob/Library/Application Support/Sublime Text/Packages/User/One Dark.sublime-color-scheme",
-		"/Users/bob/Library/Application Support/Sublime Text/Packages/Theme - One/One Dark.sublime-color-scheme",
-		"/Users/bob/Library/Containers/cc.ffitch.shottr/Data/tmp/cc.ffitch.shottr/SCR-20251219-mlzm.png",
-		"/Users/bob/Sites/My Blog Hugo/layouts/page.html",
-		"/Users/bob/Sites/My Blog Zola/templates/includes/navigation.html",
-		"/Users/bob/Sites/My Portfolio 11ty/src/index.vto",
-		"/Users/bob/Sites/My Portfolio 11ty/ToDo.md",
-		"/Users/bob/Sites/My Portfolio 11ty/src/_includes/layouts/about.vto",
-		"/Users/bob/Library/Application Support/Sublime Text/Packages/User/One.sublime-theme",
-		"/Users/bob/Library/Application Support/Sublime Text/Packages/Theme - One/One.sublime-theme",
-		"/Users/bob/Sites/My Portfolio 11ty/src/_includes/layouts/base.vto",
-		"/Users/bob/Sites/My Portfolio 11ty/src/assets/css/global.css",
-		"/Users/bob/Sites/My Portfolio 11ty/punctuation.definition.embedded.begin.vento",
-		"/Users/bob/Sites/My Blog 11ty/src/tags.liquid",
-		"/Users/bob/Sites/My Blog 11ty/src/index.liquid",
-		"/Users/bob/Sites/My Blog Zola/templates/includes/post-meta-dates.html",
 		"/Users/bob/Library/Application Support/Sublime Text/Packages/User/Preferences.sublime-settings",
-		"/Users/bob/Library/Application Support/Sublime Text/Packages/Default/Preferences.sublime-settings",
-		"/Users/bob/Sites/My Blog Hugo/hugo.sublime-project"
+		"/Users/bob/Library/Application Support/Sublime Text/Packages/Default/Preferences.sublime-settings"
 	],
 	"find":
 	{
-		"height": 67.0
+		"height": 0.0
 	},
 	"find_in_files":
 	{
@@ -170,16 +115,76 @@
 		{
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "/Users/bob/Projects/Inkwell/agents.md",
+					"selected": true,
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 1729,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								914,
+								914
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html, text.xml"
+								},
+								{
+									"rhs_empty": true,
+									"selector": "punctuation.accessor"
+								},
+								{
+									"characters": "[#(",
+									"selector": "meta.tag, source - comment - string.quoted.double.block - string.quoted.single.block - string.unquoted.heredoc",
+									"server": "marksman"
+								}
+							],
+							"color_helper.box_height": 17,
+							"color_helper.color_scheme": "One Dark.sublime-color-scheme",
+							"color_helper.refresh": true,
+							"copilot.completion._is_modified": false,
+							"copilot.completion.is_visible": false,
+							"copilot.completion.is_visible_panel_completions": false,
+							"copilot.completion.is_waiting_completion": false,
+							"copilot.completion.is_waiting_panel_completions": false,
+							"copilot.completion.original_layout": null,
+							"lsp_active": true,
+							"lsp_uri": "file:///Users/bob/Projects/Inkwell/agents.md",
+							"show_definitions": false,
+							"syntax": "Packages/Markdown/Markdown.sublime-syntax",
+							"tabs_extra_last_activated": 1778363200.85,
+							"tabs_extra_last_activated_sheet_index": 0
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"stack_multiselect": false,
+					"type": "text"
+				}
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 33.0
+		"height": 0.0
 	},
 	"input":
 	{
-		"height": 44.0
+		"height": 42.0
 	},
 	"layout":
 	{
@@ -229,7 +234,7 @@
 	"project": "Inkwell.sublime-project",
 	"replace":
 	{
-		"height": 62.0
+		"height": 0.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -262,13 +267,30 @@
 	"selected_group": 0,
 	"settings":
 	{
-		"lsp_show_inlay_hints": false
+		"copilot.conversation.code_block_index":
+		{
+		},
+		"copilot.conversation.conversation_entries":
+		[
+		],
+		"copilot.conversation.conversation_id": "",
+		"copilot.conversation.follow_up": "",
+		"copilot.conversation.group_id": -1,
+		"copilot.conversation.is_visible": false,
+		"copilot.conversation.is_waiting": false,
+		"copilot.conversation.last_active_view_id": -1,
+		"copilot.conversation.original_layout": null,
+		"copilot.conversation.reference_block_state":
+		{
+		},
+		"copilot.conversation.suggested_title": "",
+		"copilot.conversation.view_id": -1
 	},
 	"show_minimap": false,
-	"show_open_files": true,
+	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 223.0,
+	"side_bar_width": 170.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
