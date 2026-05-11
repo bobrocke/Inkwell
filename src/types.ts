@@ -133,6 +133,8 @@ export interface CollectionConfig {
   sortDir?: "asc" | "desc";
   /** Items per listing page; overrides top-level pageSize */
   pageSize?: number;
+  /** Override the base URL for this collection's listing. Defaults to /{name}/. Use "/" for the home page. */
+  url?: string;
 }
 
 export interface RssConfig {

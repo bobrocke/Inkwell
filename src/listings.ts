@@ -135,7 +135,7 @@ function buildCollectionListings(
     const withNav = assignNavigation(sorted);
     updatedPages.push(...withNav);
 
-    const baseUrl = `/${collectionName}/`;
+    const baseUrl = colConfig?.url ?? `/${collectionName}/`;
     const paginatedGroups = paginate(withNav, pageSize, baseUrl);
 
     paginatedGroups.forEach(({ items, pagination }, i) => {

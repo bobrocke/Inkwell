@@ -92,70 +92,62 @@ A taxonomy named `"tags"` reads the `tags` frontmatter field, generates pages at
 | `pageSize` | `number`                          | `pageSize` | Items per listing page              |
 | `sort`     | `"date" \| "title" \| "filename"` | `"date"`   | Sort field                          |
 | `sortDir`  | `"asc" \| "desc"`                 | `"desc"`   | Sort direction                      |
+| `url`      | `string`                          | `/{name}/` | Base URL for the collection listing |
 
-A collection named `"blog"` reads all files under `content/blog/`, paginates them at `/blog/`, and assigns prev/next navigation.
+A collection named `"blog"` reads all files under `content/blog/`, paginates them at `/blog/`, and assigns prev/next navigation. Set `url: "/"` to serve the listing as the home page instead.
 
 ## Templates
 
-Templates use [Vento](https://vento.js.org/). Put shared markup in `templates/_partials/` and include it with `{{ include "_partials/layout.vto" { ... } }}`.
+Templates live in `templates/` and use the `.vto` ([Vento](https://vento.js.org/)) extension. Put shared markup in `templates/partials/` and include it with `{{ include "partials/nav.vto" }}`.
 
 Each template receives:
 
-| Variable  | Available in  | Description                                             |
-| --------- | ------------- | ------------------------------------------------------- |
-| `page`    | page templates | The current page                                       |
-| `listing` | listing templates | Paginated list of pages or terms                  |
-| `site`    | All templates | Global context (pages, collections, taxonomies, config) |
+| Variable  | Available in      | Description                                             |
+| --------- | ----------------- | ------------------------------------------------------- |
+| `page`    | Page templates    | The current page                                        |
+| `listing` | Listing templates | Paginated list of pages or terms                        |
+| `site`    | All templates     | Global context (pages, collections, taxonomies, config) |
 
 ### Page variables
 
-| Variable | Description |
-|---|---|
-| `page.url` | Root-relative URL, e.g. `/posts/hello-world/` |
-| `page.src` | Source file path relative to `contentDir` |
-| `page.title` | From frontmatter, falls back to filename |
-| `page.date` | `Date` object from frontmatter |
-| `page.lastmod` | `Date` object from frontmatter `lastmod` field (optional) |
-| `page.draft` | `true` if the page is a draft; omitted from `build` and `serve` |
-| `page.html` | Rendered HTML body |
-| `page.excerpt` | First paragraph, plain text |
-| `page.collection` | Collection name, e.g. `"posts"` |
-| `page.prev` / `page.next` | Adjacent pages in collection order |
-| `page.media` | EXIF-enriched media files from frontmatter |
-| `page.frontmatter.*` | All raw frontmatter fields — use this for arbitrary metadata (e.g. `page.frontmatter.author`, `page.frontmatter.hero`) |
+| Variable                   | Description                                                                           |
+| -------------------------- | ------------------------------------------------------------------------------------- |
+| `page.url`                 | Root-relative URL, e.g. `/posts/hello-world/`                                         |
+| `page.src`                 | Source file path relative to `contentDir`                                             |
+| `page.title`               | From frontmatter, falls back to filename                                              |
+| `page.date`                | `Date` object from frontmatter                                                        |
+| `page.lastmod`             | `Date` object from frontmatter `lastmod` field (optional)                             |
+| `page.draft`               | `true` if the page is a draft; omitted from `build` and `serve`                      |
+| `page.html`                | Rendered HTML body                                                                    |
+| `page.excerpt`             | First paragraph, plain text                                                           |
+| `page.collection`          | Collection name, e.g. `"blog"`                                                        |
+| `page.prev` / `page.next`  | Adjacent pages in collection order                                                    |
+| `page.media`               | EXIF-enriched media files from frontmatter                                            |
+| `page.frontmatter.*`       | All raw frontmatter fields (e.g. `page.frontmatter.author`, `page.frontmatter.hero`) |
 
 ### Template resolution
 
-| File                           | Used for                                |
-| ------------------------------ | --------------------------------------- |
-| `templates/page.vto`           | All content pages                       |
-| `templates/listing.vto`        | Collection and taxonomy term listings   |
-| `templates/taxonomy-index.vto` | Taxonomy index pages (e.g. `/tags/`)    |
-| `templates/tags-index.vto`     | Index page for the `tags` taxonomy only |
+Inkwell uses **convention over configuration** for templates: creating a file with the right name is enough to activate it — no config key required. Generic fallbacks ensure the site always renders, while specific templates let you customize any page type independently.
 
-## Templates
+#### Content pages
 
-Templates live in the `templates/` directory and use the `.vto` (Vento) extension.
+For a regular content page, Inkwell checks in this order:
 
-### How a page finds its template
+1. `{layout}.vto` — if the page's frontmatter has a `layout` key (e.g. `layout: post` → `post.vto`)
+2. `{collection}.vto` — if the page belongs to a collection (e.g. collection `"blog"` → `blog.vto`)
+3. `page.vto` — fallback for all other pages
 
-For a regular content page or blog post, Inkwell resolves the template in this order:
+#### Listing pages
 
-1. **`layout` front matter** — if the post's front matter includes a `layout` key, that template is used (e.g. `layout: post` → `templates/post.vto`).
-2. **Collection name** — if the post belongs to a collection (e.g. `posts`), Inkwell looks for `templates/posts.vto`.
-3. **Fallback** — `templates/page.vto`.
+Collection listings, taxonomy term archives, and taxonomy index pages each follow their own resolution chain, all falling back to `listing.vto`:
 
-To explicitly set the template for a post, add `layout` to its front matter:
+| Page type | Resolution order |
+| --- | --- |
+| Collection listing (e.g. `/blog/`) | `blog-listing.vto` → `listing.vto` |
+| Taxonomy term archive (e.g. `/tags/javascript/`) | `tags-listing.vto` → `listing.vto` |
+| Taxonomy index (e.g. `/tags/`) | `tags-index.vto` → `taxonomy-index.vto` → `listing.vto` |
 
-```markdown
----
-title: My Post
-date: 2024-01-01
-layout: post
----
-```
-
-Listing pages (collection indexes, taxonomy pages) follow a similar but separate resolution order, falling back to `listing.vto`.
+Because the naming convention is the configuration, you can customize any listing type by simply creating the right file. For example, adding `blog-listing.vto` gives the blog listing its own design without touching any config — and makes the home page's template immediately discoverable in the project.
 
 
 ### Listing template variables
