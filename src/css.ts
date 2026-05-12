@@ -34,11 +34,11 @@ async function findCssEntries(assetsDir: string): Promise<string[]> {
  */
 async function processFile(
   filePath: string,
-  templatesDir: string,
+  assetsDir: string,
   outputDir: string,
   minify: boolean,
 ): Promise<void> {
-  const rel = relative(templatesDir, filePath);
+  const rel = relative(assetsDir, filePath);
   const outPath = join(outputDir, rel);
 
   let code: Uint8Array;
@@ -60,7 +60,7 @@ async function processFile(
 }
 
 /**
- * Process all CSS entry files in the templates directory.
+ * Process all CSS entry files in the assets directory.
  * Returns the list of output file paths written.
  */
 export async function processCss(

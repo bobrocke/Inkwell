@@ -169,22 +169,20 @@ function buildTermListings(
     const urlPrefix = `/${field}/`;
     const taxTitle = field.charAt(0).toUpperCase() + field.slice(1);
 
-    // Taxonomy index listing — one page listing all terms
+    // Taxonomy index listing — paginated list of all terms
     const allTerms = Object.values(termMap).sort((a, b) =>
       a.name.localeCompare(b.name),
     );
-    listings.push({
-      url: urlPrefix,
-      pages: [],
-      pagination: {
-        currentPage: 1,
-        totalPages: 1,
-        totalItems: allTerms.length,
-        pageSize: allTerms.length,
-      },
-      title: taxTitle,
-      terms: allTerms,
-      taxonomyIndex: field,
+    const paginatedTermGroups = paginate(allTerms, pageSize, urlPrefix);
+    paginatedTermGroups.forEach(({ items, pagination }, i) => {
+      listings.push({
+        url: pageUrl(urlPrefix, i + 1),
+        pages: [],
+        pagination,
+        title: taxTitle,
+        terms: items,
+        taxonomyIndex: field,
+      });
     });
 
     // Per-term listings

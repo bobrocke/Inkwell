@@ -1,5 +1,4 @@
-import { mkdir, writeFile, copyFile } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { mkdir, writeFile, copyFile, access } from "node:fs/promises";
 import path from "node:path";
 import { consola } from "consola";
 
@@ -58,7 +57,7 @@ const LAYOUT_TEMPLATE = `<!doctype html>
 </html>
 `;
 
-const PAGE_TEMPLATE = `{{ include "_partials/layout.vto" { content: page.html, title: page.frontmatter.title } }}
+const PAGE_TEMPLATE = `{{ include "partials/layout.vto" { content: page.html, title: page.frontmatter.title } }}
 `;
 
 const LISTING_TEMPLATE = `{{- set content }}
@@ -80,7 +79,7 @@ const LISTING_TEMPLATE = `{{- set content }}
   <a href="{{ listing.pagination.nextUrl }}">Older →</a>
 {{ /if }}
 {{- /set }}
-{{ include "_partials/layout.vto" { content, title: listing.title } }}
+{{ include "partials/layout.vto" { content, title: listing.title } }}
 `;
 
 const CSS_TEMPLATE = `/* inkwell-ssg starter styles */
@@ -147,7 +146,7 @@ const TAXONOMY_INDEX_TEMPLATE = `{{- set content }}
   {{ /for }}
 </ul>
 {{- /set }}
-{{ include "_partials/layout.vto" { content, title: listing.title } }}
+{{ include "partials/layout.vto" { content, title: listing.title } }}
 `;
 
 const INDEX_PAGE = `---
@@ -168,14 +167,17 @@ _published/
 
 export async function scaffold(name: string, targetDir: string): Promise<void> {
   const configPath = path.join(targetDir, "inkwell.config.js");
-  if (existsSync(configPath)) {
+  try {
+    await access(configPath);
     throw new Error(`inkwell.config.js already exists in ${targetDir}`);
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code !== "ENOENT") throw err;
   }
 
   const dirs = [
     targetDir,
     path.join(targetDir, "content", "posts"),
-    path.join(targetDir, "templates", "_partials"),
+    path.join(targetDir, "templates", "partials"),
     path.join(targetDir, "assets", "css"),
     path.join(targetDir, "static"),
   ];
