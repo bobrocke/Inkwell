@@ -3,4 +3,5 @@ dist/
 published/
 *.tgz
 .DS_Store
-.sublime
+*.sublime-workspace
+*.sublime-project
