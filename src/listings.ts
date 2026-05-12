@@ -123,10 +123,10 @@ function buildCollectionListings(
     const colConfig = config.collections.find(
       (c) => c.name.toLowerCase() === collectionName.toLowerCase(),
     );
-    const name = colConfig?.name ?? collectionName;
+    const displayName = colConfig?.name ?? collectionName;
     const title = colConfig
-      ? name
-      : name.charAt(0).toUpperCase() + name.slice(1);
+      ? displayName
+      : displayName.charAt(0).toUpperCase() + displayName.slice(1);
     const pageSize = colConfig?.pageSize ?? config.pageSize;
     const sortBy = colConfig?.sort ?? "date";
     const sortDir = colConfig?.sortDir ?? "desc";
