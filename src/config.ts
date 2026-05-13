@@ -14,6 +14,7 @@ const DEFAULT_SHIKI: Required<ShikiConfig> = {
 };
 
 const DEFAULTS = {
+  language: "en-US",
   description: "",
   contentDir: "content",
   outputDir: "_published",
@@ -52,6 +53,7 @@ export async function loadConfig(
   return {
     siteUrl: normalizeUrl(userConfig.siteUrl),
     title: userConfig.title,
+    language: normalizeLanguage(userConfig.language ?? DEFAULTS.language),
     description: userConfig.description ?? DEFAULTS.description,
     contentDir: resolve(cwd, userConfig.contentDir ?? DEFAULTS.contentDir),
     outputDir: resolve(cwd, userConfig.outputDir ?? DEFAULTS.outputDir),
@@ -101,4 +103,14 @@ async function readConfigFile(
 /** Strip trailing slash from siteUrl */
 function normalizeUrl(url: string): string {
   return url.replace(/\/$/, "");
+}
+
+/** Validate locale in language-region format (e.g. en-US). */
+function normalizeLanguage(language: string): string {
+  if (!/^[a-z]{2}-[A-Z]{2}$/.test(language)) {
+    throw new Error(
+      `inkwell.config.js has invalid "language": "${language}". Expected format like "en-US".`,
+    );
+  }
+  return language;
 }

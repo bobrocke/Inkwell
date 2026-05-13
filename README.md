@@ -53,6 +53,7 @@ inkwell.config.js  → Site configuration
 export default {
   title: "My Site",
   siteUrl: "https://example.com",
+  language: "en-US",
   description: "My site description",
 
   taxonomies: [
@@ -74,6 +75,8 @@ export default {
   // },
 };
 ```
+
+`language` sets the site's locale for formatting and i18n behavior. Use `ll-RR` format (for example, `en-US`).
 
 ### Taxonomy config
 
@@ -201,6 +204,16 @@ Inkwell supports an extended markdown syntax out of the box:
 | Smart quotes | `"hello"` → `"hello"` |
 | Em / en dashes | `---` / `--` |
 | Heading anchors | Auto-generated `id` + self-link on every heading |
+
+### Linking between posts
+
+Use root-relative links to the generated page URL:
+
+```md
+[WordPress Reconsidered](/blog/2023-10-23-wordpress-reconsidered/)
+```
+
+In general, `content/{collection}/{slug}.md` becomes `/{collection}/{slug}/`.
 
 ### Directives
 

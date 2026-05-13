@@ -17,19 +17,28 @@ A batteries-included static site generator for content-heavy sites. TypeScript, 
 - EXIF extraction: exifr
 - Plugin system: event/hook-based (EventEmitter pattern)
 
-## Packages
+## Dependencies
 
-- fast-glob
-- exifr
-- chokidar
-- lightningcss
-- sirv
-- citty
-- consola
-- jiti
-- tsup
-- tsx
-- vitest
+**Runtime:**
+- `chokidar` — file watching (live reload)
+- `citty` — CLI argument parsing
+- `consola` — logging
+- `exifr` — EXIF extraction from images
+- `fast-glob` — file discovery
+- `jiti` — load config files dynamically
+- `lightningcss` — CSS processing
+- `remark` + plugins — markdown parsing (gfm, smartypants, definition lists, directives)
+- `rehype` plugins — HTML manipulation (autolink headings, slug generation)
+- `shiki` — syntax highlighting
+- `sirv` — dev server
+- `ventojs` — template engine
+- `yaml` — YAML parsing (frontmatter)
+
+**Dev:**
+- `tsup` — build tool (bundles to ESM, generates .d.ts)
+- `tsx` — run TypeScript directly
+- `typescript` — type checking
+- `vitest` — test runner
 
 ## Core data model
 
@@ -44,7 +53,20 @@ These four types are the source of truth. Do not invent new top-level abstractio
 
 ## Build pipeline order
 
-Steps run in this sequence. Do not reorder without updating this file.
+The full build runs in this sequence (see `src/build.ts` for implementation). Do not reorder without discussion.
+
+1. Load config (`inkwell.config.js`)
+2. Clear output directory (unless `incremental: true`)
+3. Discover content files from source directory
+4. Parse markdown → Pages (remark plugins + Shiki syntax highlighting)
+5. Extract EXIF data from media files
+6. Build taxonomy Terms (group pages by category/tag/author/etc.)
+7. Build Listings (pagination groups + prev/next navigation)
+8. Assemble Site object (global context for templates)
+9. Process CSS (lightningcss minification + optimization)
+10. Copy static assets to output
+11. Render all templates to HTML (Vento engine)
+12. Generate RSS feed (if enabled)
 
 ## Misc
 

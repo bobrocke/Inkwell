@@ -10,6 +10,7 @@ const CONFIG_TEMPLATE = (
 export default {
   title: "${name}",
   siteUrl: "https://example.com",
+  language: "en-US",
   description: "A site built with inkwell-ssg.",
 
   taxonomies: [
@@ -35,7 +36,7 @@ export default {
 `;
 
 const LAYOUT_TEMPLATE = `<!doctype html>
-<html lang="en">
+<html lang="{{ site.config.language }}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -104,8 +105,8 @@ code { font-family: ui-monospace, monospace; font-size: 0.9em; }
 `;
 
 const SAMPLE_POST = `---
-title: "Hello, World!"
-date: "${new Date().toISOString().slice(0, 10)}"
+title: Hello, World!
+date: ${new Date().toISOString().slice(0, 10)}
 tags: [hello, inkwell]
 categories: [general]
 ---
@@ -150,7 +151,7 @@ const TAXONOMY_INDEX_TEMPLATE = `{{- set content }}
 `;
 
 const INDEX_PAGE = `---
-title: "Home"
+title: Home
 ---
 
 # Welcome

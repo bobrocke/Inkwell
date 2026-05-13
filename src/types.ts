@@ -149,6 +149,8 @@ export interface InkwellConfig {
   /** Canonical site URL, e.g. "https://example.com" (no trailing slash) */
   siteUrl: string;
   title: string;
+  /** Site locale for display/i18n, in language-region format (e.g. "en-US") */
+  language?: string;
   description?: string;
   contentDir?: string;
   outputDir?: string;
@@ -168,6 +170,7 @@ export interface InkwellConfig {
 export interface ResolvedConfig {
   siteUrl: string;
   title: string;
+  language: string;
   description: string;
   contentDir: string;
   outputDir: string;
