@@ -21,7 +21,7 @@ import type { Page, ResolvedConfig } from "../types.js";
 
 // ─── Rehype plugin: syntax highlighting ──────────────────────────────────────
 
-function makeRehypeShiki(highlighter: Awaited<ReturnType<typeof createHighlighter>>) {
+function makeRehypeShiki(highlighter: Awaited<ReturnType<typeof createHighlighter>>, lightTheme: string, darkTheme: string) {
   // Returns a unified plugin (a function that returns the transformer)
   return function rehypeShikiPlugin() {
     return function (tree: Root) {
@@ -47,7 +47,7 @@ function makeRehypeShiki(highlighter: Awaited<ReturnType<typeof createHighlighte
         tasks.push(() => {
           const hast = highlighter.codeToHast(text, {
             lang,
-            themes: { light: "github-light", dark: "github-dark" },
+            themes: { light: lightTheme, dark: darkTheme },
           });
           Object.assign(el, hast.children[0]);
         });
@@ -65,9 +65,9 @@ type AnyProcessor = Processor<any, any, any, any, any>;
 
 let _processorPromise: Promise<AnyProcessor> | null = null;
 
-async function buildProcessor(langs: string[]): Promise<AnyProcessor> {
+async function buildProcessor(langs: string[], lightTheme: string, darkTheme: string): Promise<AnyProcessor> {
   const highlighter = await createHighlighter({
-    themes: ["github-light", "github-dark"],
+    themes: [lightTheme, darkTheme],
     langs: [...langs, ventoGrammar as unknown as LanguageRegistration],
   });
   return unified()
@@ -80,13 +80,13 @@ async function buildProcessor(langs: string[]): Promise<AnyProcessor> {
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings, { behavior: "wrap" })
-    .use(makeRehypeShiki(highlighter))
+    .use(makeRehypeShiki(highlighter, lightTheme, darkTheme))
     .use(rehypeStringify, { allowDangerousHtml: true });
 }
 
-function getProcessor(langs: string[]): Promise<AnyProcessor> {
+function getProcessor(langs: string[], lightTheme: string, darkTheme: string): Promise<AnyProcessor> {
   if (!_processorPromise) {
-    _processorPromise = buildProcessor(langs);
+    _processorPromise = buildProcessor(langs, lightTheme, darkTheme);
   }
   return _processorPromise;
 }
@@ -204,7 +204,7 @@ export async function parseFile(
 ): Promise<Page> {
   const [raw, processor] = await Promise.all([
     readFile(filePath, "utf-8"),
-    getProcessor(config.shiki.langs),
+    getProcessor(config.shiki.langs, config.shiki.lightTheme, config.shiki.darkTheme),
   ]);
   return parseFileInternal(filePath, raw, processor, config);
 }
@@ -218,7 +218,7 @@ export async function parseContent(
 ): Promise<Page[]> {
   const [contents, processor] = await Promise.all([
     Promise.all(filePaths.map((f) => readFile(f, "utf-8"))),
-    getProcessor(config.shiki.langs),
+    getProcessor(config.shiki.langs, config.shiki.lightTheme, config.shiki.darkTheme),
   ]);
 
   return Promise.all(

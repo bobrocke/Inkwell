@@ -11,6 +11,8 @@ const DEFAULT_RSS: RssConfig = {
 
 const DEFAULT_SHIKI: Required<ShikiConfig> = {
   langs: ["javascript", "typescript", "python", "php", "html", "erb", "go", "json", "liquid", "markdown", "ruby", "css"],
+  lightTheme: "github-light",
+  darkTheme: "github-dark",
 };
 
 const DEFAULTS = {
@@ -69,6 +71,8 @@ export async function loadConfig(
       langs: userConfig.shiki?.langs
         ? [...new Set([...DEFAULTS.shiki.langs, ...userConfig.shiki.langs])]
         : DEFAULTS.shiki.langs,
+      lightTheme: userConfig.shiki?.lightTheme ?? DEFAULTS.shiki.lightTheme,
+      darkTheme: userConfig.shiki?.darkTheme ?? DEFAULTS.shiki.darkTheme,
     },
   };
 }

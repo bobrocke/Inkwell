@@ -117,6 +117,10 @@ export interface Site {
 export interface ShikiConfig {
   /** Languages to load for syntax highlighting. Defaults to a curated common set. */
   langs?: string[];
+  /** Shiki theme for light mode. Defaults to "github-light". */
+  lightTheme?: string;
+  /** Shiki theme for dark mode. Defaults to "github-dark". */
+  darkTheme?: string;
 }
 
 export interface TaxonomyConfig {
