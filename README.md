@@ -80,12 +80,37 @@ export default {
 
 ### Taxonomy config
 
-| Field      | Type     | Default    | Description                               |
-| ---------- | -------- | ---------- | ----------------------------------------- |
-| `name`     | `string` | —          | Frontmatter field, URL slug, display name |
-| `pageSize` | `number` | `pageSize` | Items per term listing page               |
+| Field           | Type     | Default    | Description                                              |
+| --------------- | -------- | ---------- | -------------------------------------------------------- |
+| `name`          | `string` | —          | Frontmatter field, URL slug, display name                |
+| `pageSize`      | `number` | `pageSize` | Items per term listing page (e.g. posts per tag page)    |
+| `indexPageSize` | `number` | `pageSize` | Terms per taxonomy index page (e.g. tags on `/tags/`)    |
+| `titleString`   | `string` | `"{term}"` | Title format for per-term listing pages. Use `{term}` for the term name and `{taxonomy}` for the singular taxonomy name. |
 
-A taxonomy named `"tags"` reads the `tags` frontmatter field, generates pages at `/tags/`, `/tags/typescript/`, etc., and auto-capitalizes the display heading.
+A taxonomy named `"tags"` reads the `tags` frontmatter field, generates pages at `/tags/`, `/tags/typescript/`, etc., and auto-capitalizes the display heading. Per-term listing titles are automatically singularized — `"categories"` becomes `"Category"`, `"tags"` becomes `"Tag"` — for use in `titleString`.
+
+By default, per-term pages use just the term name as the title (e.g. "Photography"). Use `titleString` to customize:
+
+```js
+taxonomies: [
+  // Default: "Photography"
+  { name: "categories", pageSize: 4, indexPageSize: 8 },
+
+  // Custom: "Posts tagged swift"
+  { name: "tags", pageSize: 4, titleString: "Posts tagged {term}" },
+
+  // With taxonomy name: "Category: Photography"
+  { name: "categories", titleString: "{taxonomy}: {term}" },
+]
+```
+
+Use `indexPageSize` when you want the taxonomy index (the list of all terms) to show more items per page than the individual term listings. For example, showing 8 categories on `/categories/` while paginating each category's posts at 4 per page:
+
+```js
+taxonomies: [
+  { name: "categories", pageSize: 4, indexPageSize: 8 },
+]
+```
 
 ### Collection config
 

@@ -20,7 +20,8 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "SSG",
@@ -29,6 +30,13 @@
   ],
   "author": "Bob Rockefeller",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bobrockefeller/inkwell-ssg.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "@silvenon/remark-smartypants": "^1.0.0",
     "chokidar": "^4.0.0",

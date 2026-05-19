@@ -128,6 +128,15 @@ export interface TaxonomyConfig {
   name: string;
   /** Items per term listing page; overrides top-level pageSize */
   pageSize?: number;
+  /** Items per taxonomy index page (list of all terms); overrides pageSize */
+  indexPageSize?: number;
+  /**
+   * Format string for per-term listing page titles.
+   * Use `{term}` for the term name and `{taxonomy}` for the singular taxonomy name.
+   * Defaults to just the term name, e.g. "Photography".
+   * Example: "Posts tagged {term}" → "Posts tagged swift"
+   */
+  titleString?: string;
 }
 
 export interface CollectionConfig {

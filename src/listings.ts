@@ -166,14 +166,20 @@ function buildTermListings(
   for (const [field, termMap] of Object.entries(taxonomies)) {
     const taxConfig = config.taxonomies.find((t) => t.name === field);
     const pageSize = taxConfig?.pageSize ?? config.pageSize;
+    const indexPageSize = taxConfig?.indexPageSize ?? pageSize;
     const urlPrefix = `/${field}/`;
     const taxTitle = field.charAt(0).toUpperCase() + field.slice(1);
+    const taxTitleSingular = taxTitle.endsWith('ies')
+      ? taxTitle.slice(0, -3) + 'y'
+      : taxTitle.endsWith('s')
+        ? taxTitle.slice(0, -1)
+        : taxTitle;
 
     // Taxonomy index listing — paginated list of all terms
     const allTerms = Object.values(termMap).sort((a, b) =>
       a.name.localeCompare(b.name),
     );
-    const paginatedTermGroups = paginate(allTerms, pageSize, urlPrefix);
+    const paginatedTermGroups = paginate(allTerms, indexPageSize, urlPrefix);
     paginatedTermGroups.forEach(({ items, pagination }, i) => {
       listings.push({
         url: pageUrl(urlPrefix, i + 1),
@@ -191,11 +197,16 @@ function buildTermListings(
       const paginatedGroups = paginate(sorted, pageSize, term.url);
 
       paginatedGroups.forEach(({ items, pagination }, i) => {
+        const termTitle = taxConfig?.titleString
+          ? taxConfig.titleString
+              .replace('{term}', term.name)
+              .replace('{taxonomy}', taxTitleSingular)
+          : term.name;
         listings.push({
           url: pageUrl(term.url, i + 1),
           pages: items,
           pagination,
-          title: `${taxTitle}: ${term.name}`,
+          title: termTitle,
           term,
         });
       });
