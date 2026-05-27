@@ -8,10 +8,10 @@ const CONFIG_TEMPLATE = (
   name: string,
 ) => `/** @type {import('inkwell-ssg').InkwellConfig} */
 export default {
-  title: "${name}",
+  title: ${JSON.stringify(name)},
   siteUrl: "https://example.com",
   language: "en-US",
-  description: "A site built with inkwell-ssg.",
+  description: "A site built with Inkwell.",
 
   taxonomies: [
     { name: "tags", pageSize: 10 },
@@ -118,7 +118,7 @@ or run \`inkwell serve\` to start the development server.
 
 ## Syntax highlighting
 
-inkwell-ssg uses [Shiki](https://shiki.style/) to highlight code at build time — no JavaScript is shipped to the browser.
+Inkwell uses [Shiki](https://shiki.style/) to highlight code at build time — no JavaScript is shipped to the browser.
 
 \`\`\`js
 // inkwell.config.js

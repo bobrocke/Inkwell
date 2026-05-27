@@ -73,5 +73,14 @@ function buildTaxonomy(
     }
   }
 
+  // Sort each term's pages so templates get a predictable order
+  for (const term of Object.values(termMap)) {
+    term.pages.sort((a, b) => {
+      const ta = a.date?.getTime() ?? 0;
+      const tb = b.date?.getTime() ?? 0;
+      return tb - ta; // newest first
+    });
+  }
+
   return termMap;
 }

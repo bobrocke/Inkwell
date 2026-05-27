@@ -3,7 +3,7 @@ import { consola } from "consola";
 import { loadConfig } from "./config.js";
 import { discoverContent } from "./content/discover.js";
 import { parseContent } from "./content/parse.js";
-import { enrichAllWithExif } from "./content/exif.js";
+
 import { buildTaxonomies } from "./taxonomy.js";
 import { buildListings } from "./listings.js";
 import { assembleSite } from "./site.js";
@@ -36,14 +36,14 @@ export interface BuildResult {
  *  2. Clear output directory
  *  3. Discover content files
  *  4. Parse markdown → Pages (remark + Shiki)
- *  5. Extract EXIF from media
+ *  5. Filter drafts
  *  6. Build taxonomy Terms
- *  7. Build Listings (pagination + prev/next)
- *  8. Assemble Site object
- *  9. Process CSS (lightningcss)
- * 10. Copy static assets
- * 11. Render templates → HTML (Vento)
- * 12. Generate RSS feed
+ *  6. Build Listings (pagination + prev/next)
+ *  7. Assemble Site object
+ *  8. Process CSS (lightningcss)
+ *  9. Copy static assets
+ * 10. Render templates → HTML (Vento)
+ * 11. Generate RSS feed
  */
 export async function build(options: BuildOptions = {}): Promise<BuildResult> {
   const start = Date.now();
@@ -74,17 +74,15 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
   consola.start("Parsing markdown…");
   const rawPages = await parseContent(files, config);
 
-  // ── 5. EXIF ─────────────────────────────────────────────────────────────────
-  consola.start("Extracting EXIF…");
-  const enriched = await enrichAllWithExif(rawPages, config);
-  const pages = includeDrafts ? enriched : enriched.filter((p) => !p.draft);
+  // ── 5. Filter drafts ────────────────────────────────────────────────────────
+  const pages = includeDrafts ? rawPages : rawPages.filter((p) => !p.draft);
   if (!includeDrafts) {
-    const draftCount = enriched.length - pages.length;
+    const draftCount = rawPages.length - pages.length;
     if (draftCount > 0) consola.info(`Skipping ${draftCount} draft page(s)`);
   }
   await emitter.emit("afterParse", { pages, config });
 
-  // ── 6. Taxonomy ─────────────────────────────────────────────────────────────
+  // ── 5. Taxonomy ─────────────────────────────────────────────────────────────
   consola.start("Building taxonomies…");
   const taxonomies = buildTaxonomies(pages, config);
   const termCount = Object.values(taxonomies).reduce(
@@ -94,15 +92,15 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
   if (termCount > 0) consola.info(`Built ${termCount} taxonomy term(s)`);
   await emitter.emit("afterTaxonomy", { pages, taxonomies, config });
 
-  // ── 7. Listings ─────────────────────────────────────────────────────────────
+  // ── 6. Listings ─────────────────────────────────────────────────────────────
   consola.start("Building listings…");
   const { pages: navPages, listings } = buildListings(pages, taxonomies, config);
   consola.info(`Built ${listings.length} listing page(s)`);
 
-  // ── 8. Site ─────────────────────────────────────────────────────────────────
+  // ── 7. Site ─────────────────────────────────────────────────────────────────
   const site = assembleSite(navPages, taxonomies, listings, config);
 
-  // ── 9–12. Output (parallelisable) ───────────────────────────────────────────
+  // ── 8–11. Output (parallelisable) ───────────────────────────────────────────
   consola.start("Processing CSS, assets, templates & RSS…");
   await emitter.emit("beforeRender", { site });
   await Promise.all([

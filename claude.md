@@ -1,4 +1,4 @@
-# AGENTS.md — inkwell-ssg
+# CLAUDE.md — inkwell-ssg
 
 ## Project overview
 
@@ -67,7 +67,3 @@ The full build runs in this sequence (see `src/build.ts` for implementation). Do
 10. Copy static assets to output
 11. Render all templates to HTML (Vento engine)
 12. Generate RSS feed (if enabled)
-
-## Misc
-
-Keep responses concise and to the point.

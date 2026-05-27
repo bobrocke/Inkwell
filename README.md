@@ -150,7 +150,7 @@ Each template receives:
 | `page.excerpt`             | First paragraph, plain text                                                           |
 | `page.collection`          | Collection name, e.g. `"blog"`                                                        |
 | `page.prev` / `page.next`  | Adjacent pages in collection order                                                    |
-| `page.media`               | EXIF-enriched media files from frontmatter                                            |
+| `page.media`               | Media files from frontmatter (EXIF populated via `enrichWithExif`)                   |
 | `page.frontmatter.*`       | All raw frontmatter fields (e.g. `page.frontmatter.author`, `page.frontmatter.hero`) |
 
 ### Template resolution
@@ -200,6 +200,60 @@ Because the naming convention is the configuration, you can customize any listin
 {{ for term of listing.terms }}
 <a href="{{ term.url }}">{{ term.name }} ({{ term.count }})</a>
 {{ /for }}
+```
+
+## EXIF
+
+EXIF extraction is **opt-in** — no image is read unless you call the function. Two APIs are available:
+
+### Template helper
+
+The `exif()` helper is available in all templates. Pass a file path (paths starting with `/` are resolved relative to the static directory):
+
+```html
+<!-- All EXIF data -->
+{{ set data = await exif("/photos/shoot-001.jpg") }}
+Camera: {{ data.Make }} {{ data.Model }}
+ISO: {{ data.ISO }}
+
+<!-- Specific fields only -->
+{{ set info = await exif("/photos/shoot-001.jpg", "Make", "Model", "ISO") }}
+{{ info.Make }} {{ info.Model }}
+
+<!-- Single field -->
+{{ (await exif("/photos/shoot-001.jpg", "ImageDescription")).ImageDescription }}
+```
+
+Returns a flat `Record<string, unknown>` of key/value pairs. Returns an empty object `{}` if the file has no EXIF data or cannot be read.
+
+### Programmatic API
+
+```ts
+import { readExif } from "inkwell-ssg";
+
+// All EXIF data
+const data = await readExif("/absolute/path/to/image.jpg");
+console.log(data.Make, data.Model);
+
+// Specific fields only
+const { Make, ISO } = await readExif("/path/to/image.jpg", ["Make", "ISO"]);
+```
+
+`enrichWithExif` and `enrichAllWithExif` are still available to populate `page.media` with typed `ExifData` (useful in plugins or `afterParse` hooks):
+
+```js
+// inkwell.config.js plugin example
+plugins: [{
+  name: "auto-exif",
+  hooks: {
+    afterParse: async ({ pages, config }) => {
+      const { enrichAllWithExif } = await import("inkwell-ssg");
+      const enriched = await enrichAllWithExif(pages, config);
+      pages.length = 0;
+      pages.push(...enriched);
+    },
+  },
+}],
 ```
 
 ## Syntax highlighting

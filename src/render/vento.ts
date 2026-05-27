@@ -1,5 +1,5 @@
 import { mkdir, writeFile, access } from "node:fs/promises";
-import { join, dirname } from "node:path";
+import { join, dirname, resolve } from "node:path";
 import vento from "ventojs";
 import { slugify } from "../taxonomy.js";
 import type { Page, Listing, Site, ResolvedConfig } from "../types.js";
@@ -129,6 +129,20 @@ function buildHelpers(site: Site) {
     /** Return the URL for a taxonomy term, e.g. termUrl("tags", "typescript") */
     termUrl: (taxonomy: string, termName: string): string | undefined =>
       site.taxonomies[taxonomy]?.[slugify(termName)]?.url,
+
+    /**
+     * Read EXIF data from an image file.
+     * Paths starting with "/" are resolved relative to the static directory.
+     * When called without field names, returns all EXIF key/value pairs.
+     * When called with field names, returns only those specific keys.
+     */
+    exif: async (filePath: string, ...fields: string[]): Promise<Record<string, unknown>> => {
+      const { readExif } = await import("../content/exif.js");
+      const resolved = filePath.startsWith("/")
+        ? resolve(site.config.staticDir, filePath.slice(1))
+        : filePath;
+      return readExif(resolved, fields.length > 0 ? fields : undefined);
+    },
   };
 }
 

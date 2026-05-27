@@ -31,39 +31,65 @@ function resolveMediaPath(
 }
 
 /**
- * Read EXIF data from an image file. Returns undefined if the file is not
- * an image or EXIF cannot be extracted.
+ * Read EXIF data from an image file.
+ *
+ * Returns a flat key/value pair structure of all extracted EXIF parameters.
+ * When `fields` is provided, only those specific keys are returned.
+ *
+ * @param filePath - Absolute filesystem path to the image file
+ * @param fields - Optional list of EXIF field names to return (e.g. ["Make", "Model"])
+ * @returns A record of EXIF key/value pairs, or an empty object on failure
  */
-async function readExif(filePath: string): Promise<ExifData | undefined> {
+export async function readExif(
+  filePath: string,
+  fields?: string[],
+): Promise<Record<string, unknown>> {
   try {
     const raw = await exifr.parse(filePath, {
       tiff: true,
       exif: true,
       gps: true,
     });
-    if (!raw) return undefined;
+    if (!raw) return {};
 
-    const data: ExifData = {};
-    if (raw.Make) data.make = String(raw.Make);
-    if (raw.Model) data.model = String(raw.Model);
-    if (raw.ExposureTime != null) data.exposureTime = Number(raw.ExposureTime);
-    if (raw.FNumber != null) data.fNumber = Number(raw.FNumber);
-    if (raw.ISO != null) data.iso = Number(raw.ISO);
-    if (raw.FocalLength != null) data.focalLength = Number(raw.FocalLength);
-    if (raw.DateTimeOriginal) data.dateTimeOriginal = new Date(raw.DateTimeOriginal as string);
-    if (raw.latitude != null && raw.longitude != null) {
-      data.gps = { lat: Number(raw.latitude), lon: Number(raw.longitude) };
+    if (fields && fields.length > 0) {
+      const filtered: Record<string, unknown> = {};
+      for (const field of fields) {
+        if (field in (raw as Record<string, unknown>)) {
+          filtered[field] = (raw as Record<string, unknown>)[field];
+        }
+      }
+      return filtered;
     }
 
-    // Carry through any other fields for template access
-    for (const [k, v] of Object.entries(raw)) {
-      if (!(k in data)) data[k] = v;
-    }
-
-    return Object.keys(data).length > 0 ? data : undefined;
+    return { ...raw } as Record<string, unknown>;
   } catch {
-    return undefined;
+    return {};
   }
+}
+
+/**
+ * Map raw exifr output to the typed ExifData structure.
+ */
+function rawToExifData(raw: Record<string, unknown>): ExifData {
+  const data: ExifData = {};
+
+  if (raw.Make) data.make = String(raw.Make);
+  if (raw.Model) data.model = String(raw.Model);
+  if (raw.ExposureTime != null) data.exposureTime = Number(raw.ExposureTime);
+  if (raw.FNumber != null) data.fNumber = Number(raw.FNumber);
+  if (raw.ISO != null) data.iso = Number(raw.ISO);
+  if (raw.FocalLength != null) data.focalLength = Number(raw.FocalLength);
+  if (raw.DateTimeOriginal) data.dateTimeOriginal = new Date(raw.DateTimeOriginal as string);
+  if (raw.latitude != null && raw.longitude != null) {
+    data.gps = { lat: Number(raw.latitude), lon: Number(raw.longitude) };
+  }
+
+  for (const [k, v] of Object.entries(raw)) {
+    if (!(k in data)) data[k] = v;
+  }
+
+  return data;
 }
 
 /**
@@ -85,7 +111,8 @@ export async function enrichWithExif(
     const refs = toArray(page.frontmatter[field]);
     for (const ref of refs) {
       const filePath = resolveMediaPath(ref, page, config);
-      const exif = await readExif(filePath);
+      const raw = await readExif(filePath);
+      const exif = Object.keys(raw).length > 0 ? rawToExifData(raw) : undefined;
       mediaFiles.push({ src: ref, exif });
     }
   }

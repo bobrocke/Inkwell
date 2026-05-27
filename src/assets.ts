@@ -20,14 +20,15 @@ export async function copyStaticAssets(
 
   if (files.length === 0) return [];
 
-  await Promise.all(
-    files.map(async (src) => {
-      const rel = relative(config.staticDir, src);
-      const dest = join(config.outputDir, rel);
-      await mkdir(dirname(dest), { recursive: true });
-      await copyFile(src, dest);
-    }),
-  );
+  // Create all unique output directories first, then copy files
+  const filePairs = files.map((src) => ({
+    src,
+    dest: join(config.outputDir, relative(config.staticDir, src)),
+  }));
+  const dirs = new Set(filePairs.map(({ dest }) => dirname(dest)));
+  await Promise.all([...dirs].map((dir) => mkdir(dir, { recursive: true })));
 
-  return files.map((src) => join(config.outputDir, relative(config.staticDir, src)));
+  await Promise.all(filePairs.map(({ src, dest }) => copyFile(src, dest)));
+
+  return filePairs.map(({ dest }) => dest);
 }

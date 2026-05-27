@@ -108,7 +108,9 @@ export async function dev(options: DevOptions = {}): Promise<void> {
       req.socket.setNoDelay(true);
       res.write(":\n\n"); // initial comment to confirm connection
       clients.add(res);
-      req.on("close", () => clients.delete(res));
+      const cleanup = () => clients.delete(res);
+      req.on("close", cleanup);
+      res.on("close", cleanup);
       return;
     }
 
@@ -161,8 +163,8 @@ export async function dev(options: DevOptions = {}): Promise<void> {
     try {
       resetEngine(); // always reset so template changes are never served from cache
       if (isConfig) resetProcessor();
-      await build({ cwd, incremental: !isConfig, includeDrafts });
-      await injectReloadSnippet(config.outputDir);
+      const result = await build({ cwd, incremental: !isConfig, includeDrafts });
+      await injectReloadSnippet(result.config.outputDir);
       broadcastReload();
     } catch (err) {
       consola.error("Rebuild failed:", (err as Error).message);

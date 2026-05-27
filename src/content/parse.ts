@@ -8,8 +8,8 @@ import remarkDefinitionList from "remark-definition-list";
 import remarkSmartypants from "@silvenon/remark-smartypants";
 import remarkDirective from "remark-directive";
 import remarkRehype from "remark-rehype";
+import { defListHastHandlers } from "mdast-util-definition-list";
 import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeStringify from "rehype-stringify";
 import { parse as parseYaml } from "yaml";
 import { visit } from "unist-util-visit";
@@ -64,6 +64,7 @@ function makeRehypeShiki(highlighter: Awaited<ReturnType<typeof createHighlighte
 type AnyProcessor = Processor<any, any, any, any, any>;
 
 let _processorPromise: Promise<AnyProcessor> | null = null;
+let _processorParams: { langs: string; lightTheme: string; darkTheme: string } | null = null;
 
 async function buildProcessor(langs: string[], lightTheme: string, darkTheme: string): Promise<AnyProcessor> {
   const highlighter = await createHighlighter({
@@ -77,16 +78,18 @@ async function buildProcessor(langs: string[], lightTheme: string, darkTheme: st
     .use(remarkDefinitionList)
     .use(remarkDirective)
     .use(remarkSmartypants, { dashes: 'oldschool' })
-    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(remarkRehype, { allowDangerousHtml: true, handlers: defListHastHandlers })
     .use(rehypeSlug)
-    .use(rehypeAutolinkHeadings, { behavior: "wrap" })
     .use(makeRehypeShiki(highlighter, lightTheme, darkTheme))
     .use(rehypeStringify, { allowDangerousHtml: true });
 }
 
 function getProcessor(langs: string[], lightTheme: string, darkTheme: string): Promise<AnyProcessor> {
-  if (!_processorPromise) {
+  const paramsKey = JSON.stringify({ langs, lightTheme, darkTheme });
+
+  if (!_processorPromise || _processorParams?.langs !== paramsKey) {
     _processorPromise = buildProcessor(langs, lightTheme, darkTheme);
+    _processorParams = { langs: paramsKey, lightTheme, darkTheme };
   }
   return _processorPromise;
 }
@@ -94,6 +97,7 @@ function getProcessor(langs: string[], lightTheme: string, darkTheme: string): P
 /** Reset the processor singleton (e.g. after a config change in dev mode). */
 export function resetProcessor(): void {
   _processorPromise = null;
+  _processorParams = null;
 }
 
 // ─── Frontmatter extraction ───────────────────────────────────────────────────
@@ -144,7 +148,7 @@ export function fileToUrl(filePath: string, contentDir: string): string {
 // ─── Excerpt extraction ───────────────────────────────────────────────────────
 
 function extractExcerpt(html: string): string {
-  const match = html.match(/<p>([\s\S]*?)<\/p>/);
+  const match = html.match(/<p[^>]*>([\s\S]*?)<\/p>/);
   if (!match) return "";
   return match[1].replace(/<[^>]+>/g, "").trim();
 }

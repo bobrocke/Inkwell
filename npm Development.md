@@ -87,8 +87,18 @@ npm install ../my-package/my-package-1.0.0.tgz
 
 `npm link` is the most common workflow for active development since changes to your package are reflected immediately (if no build step is needed). Use `file:` for simpler setups or monorepos.
 
-
 /Users/bob/.copilot/session-state/f3ece444-9b2c-4dff-abf4-7990c253c525/fi
 les/context.md
 
-/Users/bob/Projects/Inkwell/notes.md
+## Publishing
+
+After changes and ready to publish:
+
+- update the readme for version changes
+- npm test
+- version bump:
+- npm version patch # 0.1.0 → 0.1.1 (fixes only)
+- npm version minor # 0.1.0 → 0.2.0 (backward-compatible new features)
+- npm version major # 0.1.0 → 1.0.0 (breaking changes)
+- git commit and push
+- npm publish
