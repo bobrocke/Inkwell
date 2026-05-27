@@ -28,6 +28,7 @@ inkwell serve
 | `inkwell serve`      | Build, serve, and watch for changes (with live reload) |
 | `inkwell serve-d`    | Like `serve`, but includes pages with `draft: true`    |
 | `inkwell new <name>` | Scaffold a new site                                    |
+| `inkwell install`    | Install site dependencies (runs `npm install`)         |
 
 All commands accept `--cwd <path>` to run from a different directory. `inkwell serve` and `inkwell serve-d` also accept `--port` and `--host`.
 
@@ -35,10 +36,10 @@ All commands accept `--cwd <path>` to run from a different directory. `inkwell s
 
 ```
 content/
-  blog/           → Files here become the "blog" collection
+  posts/          → Files here become the "posts" collection
 static/            → Copied verbatim to _published/
 templates/
-  _partials/       → Partial templates (included via {{ include }})
+  partials/       → Partial templates (included via {{ include }})
 assets/
   css/             → CSS files processed by lightningcss
 _published/        → Build output
@@ -61,17 +62,20 @@ export default {
     { name: "categories", pageSize: 10 },
   ],
 
-  collections: [{ name: "blog", pageSize: 10, sort: "date", sortDir: "desc" }],
+  collections: [{ name: "posts", pageSize: 10, sort: "date", sortDir: "desc" }],
 
   rss: {
     enabled: true,
     limit: 20,
+    path: "/rss.xml",
   },
 
-  // Default languages: js, ts, python, php, html, erb, go, json, liquid, markdown, ruby, css, vento
+  // Default languages: javascript, typescript, python, php, html, erb, go, json, liquid, markdown, ruby, css, vento
   // Add more as needed:
   // shiki: {
   //   langs: ["rust", "bash"],
+  //   lightTheme: "github-light",
+  //   darkTheme: "github-dark",
   // },
 };
 ```
@@ -122,7 +126,7 @@ taxonomies: [
 | `sortDir`  | `"asc" \| "desc"`                 | `"desc"`   | Sort direction                      |
 | `url`      | `string`                          | `/{name}/` | Base URL for the collection listing |
 
-A collection named `"blog"` reads all files under `content/blog/`, paginates them at `/blog/`, and assigns prev/next navigation. Set `url: "/"` to serve the listing as the home page instead.
+A collection named `"posts"` reads all files under `content/posts/`, paginates them at `/posts/`, and assigns prev/next navigation. Set `url: "/"` to serve the listing as the home page instead.
 
 ## Templates
 
@@ -265,6 +269,8 @@ To add languages beyond the defaults, set `shiki.langs` in your config — user-
 ```js
 shiki: {
   langs: ["rust", "bash", "elixir"],
+  lightTheme: "github-light",    // default
+  darkTheme: "github-dark",      // default
 },
 ```
 
