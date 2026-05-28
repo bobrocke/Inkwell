@@ -36,7 +36,7 @@ All commands accept `--cwd <path>` to run from a different directory. `inkwell s
 
 ```
 content/
-  posts/          → Files here become the "posts" collection
+  posts/          → Files here become the "posts" collection, for example
 static/            → Copied verbatim to _published/
 templates/
   partials/       → Partial templates (included via {{ include }})

@@ -12,7 +12,7 @@
   },
   "types": "./dist/index.d.ts",
   "bin": {
-    "inkwell": "./dist/cli.js"
+    "inkwell": "dist/cli.js"
   },
   "files": [
     "dist"

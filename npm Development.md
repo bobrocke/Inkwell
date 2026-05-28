@@ -101,4 +101,5 @@ After changes and ready to publish:
 - npm version minor # 0.1.0 → 0.2.0 (backward-compatible new features)
 - npm version major # 0.1.0 → 1.0.0 (breaking changes)
 - git commit and push
+- npm login
 - npm publish
