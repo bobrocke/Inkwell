@@ -20,6 +20,12 @@
    npm link
    ```
 
+  then:
+
+  ```bash
+  npm run dev
+  ```
+
    This creates a global symlink to your package. Then, in the project that will consume it:
 
    ```bash
