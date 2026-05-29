@@ -138,7 +138,32 @@ Each template receives:
 | --------- | ----------------- | ------------------------------------------------------- |
 | `page`    | Page templates    | The current page                                        |
 | `listing` | Listing templates | Paginated list of pages or terms                        |
-| `site`    | All templates     | Global context (pages, collections, taxonomies, config) |
+| `site`    | All templates     | Global context (pages, collections, taxonomies, config, mode) |
+
+### Production / development mode
+
+Every template can inspect `site.mode` to conditionally include or exclude content depending on the build command:
+
+| `site.mode` value | Set by                              |
+| ----------------- | ----------------------------------- |
+| `"production"`    | `inkwell build`                     |
+| `"development"`   | `inkwell serve` / `inkwell serve-d` |
+
+This is useful for analytics snippets, debugging overlays, `robots` meta tags, or any content that should differ between development and production:
+
+```vento
+{{ if site.mode == "production" }}
+  <script defer src="https://cdn.example.com/analytics.js"></script>
+  <meta name="robots" content="index, follow">
+{{ /if }}
+
+{{ if site.mode == "development" }}
+  <link rel="stylesheet" href="/assets/css/debug-grid.css">
+  <meta name="robots" content="noindex, nofollow">
+{{ /if }}
+```
+
+`site.mode` is set automatically by the CLI — you don't need to configure anything. It's a build-time option, not a config file field.
 
 ### Page variables
 

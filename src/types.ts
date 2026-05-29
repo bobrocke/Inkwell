@@ -110,6 +110,8 @@ export interface Site {
   /** All listing pages (index + paginated archives) */
   listings: Listing[];
   config: ResolvedConfig;
+  /** Build mode — "development" during inkwell serve, "production" during inkwell build */
+  mode: "development" | "production";
 }
 
 // ─── Config ───────────────────────────────────────────────────────────────────

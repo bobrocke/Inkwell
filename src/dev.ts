@@ -62,7 +62,7 @@ export async function dev(options: DevOptions = {}): Promise<void> {
   consola.info("Starting inkwell dev server…");
 
   // ── Initial build ──────────────────────────────────────────────────────────
-  const result = await build({ cwd, includeDrafts });
+  const result = await build({ cwd, includeDrafts, mode: "development" });
   const config: ResolvedConfig = result.config;
   await injectReloadSnippet(config.outputDir);
 
@@ -163,7 +163,7 @@ export async function dev(options: DevOptions = {}): Promise<void> {
     try {
       resetEngine(); // always reset so template changes are never served from cache
       if (isConfig) resetProcessor();
-      const result = await build({ cwd, incremental: !isConfig, includeDrafts });
+      const result = await build({ cwd, incremental: !isConfig, includeDrafts, mode: "development" });
       await injectReloadSnippet(result.config.outputDir);
       broadcastReload();
     } catch (err) {

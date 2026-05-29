@@ -21,6 +21,8 @@ export interface BuildOptions {
   incremental?: boolean;
   /** Include pages marked `draft: true` in the build. Defaults to false. */
   includeDrafts?: boolean;
+  /** Build mode. "development" enables dev-specific template paths. Defaults to "production". */
+  mode?: "development" | "production";
 }
 
 export interface BuildResult {
@@ -98,7 +100,8 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
   consola.info(`Built ${listings.length} listing page(s)`);
 
   // ── 7. Site ─────────────────────────────────────────────────────────────────
-  const site = assembleSite(navPages, taxonomies, listings, config);
+  const mode: "development" | "production" = options.mode ?? "production";
+  const site = assembleSite(navPages, taxonomies, listings, config, mode);
 
   // ── 8–11. Output (parallelisable) ───────────────────────────────────────────
   consola.start("Processing CSS, assets, templates & RSS…");

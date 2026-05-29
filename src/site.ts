@@ -12,6 +12,7 @@ export function assembleSite(
   taxonomies: Record<string, Record<string, Term>>,
   listings: Listing[],
   config: ResolvedConfig,
+  mode: "development" | "production" = "production",
 ): Site {
   return {
     pages,
@@ -19,6 +20,7 @@ export function assembleSite(
     taxonomies,
     listings,
     config,
+    mode,
   };
 }
 
