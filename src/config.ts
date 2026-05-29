@@ -38,8 +38,9 @@ const DEFAULTS = {
 export async function loadConfig(
   cwd: string = process.cwd(),
 ): Promise<ResolvedConfig> {
-  const configPath = resolve(cwd, "inkwell.config.js");
-  const userConfig = await readConfigFile(configPath);
+  const tsPath = resolve(cwd, "inkwell.config.ts");
+  const jsPath = resolve(cwd, "inkwell.config.js");
+  const userConfig = (await readConfigFile(tsPath)) ?? (await readConfigFile(jsPath)) ?? {};
 
   if (!userConfig.siteUrl) {
     throw new Error(
@@ -62,7 +63,7 @@ export async function loadConfig(
     staticDir: resolve(cwd, userConfig.staticDir ?? DEFAULTS.staticDir),
     templatesDir: resolve(cwd, userConfig.templatesDir ?? DEFAULTS.templatesDir),
     assetsDir: resolve(cwd, userConfig.assetsDir ?? DEFAULTS.assetsDir),
-    pageSize: userConfig.pageSize ?? DEFAULTS.pageSize,
+    pageSize: validatePageSize(userConfig.pageSize ?? DEFAULTS.pageSize),
     taxonomies: userConfig.taxonomies ?? DEFAULTS.taxonomies,
     collections: userConfig.collections ?? DEFAULTS.collections,
     rss: { ...DEFAULT_RSS, ...userConfig.rss },
@@ -79,7 +80,7 @@ export async function loadConfig(
 
 async function readConfigFile(
   configPath: string,
-): Promise<Partial<InkwellConfig>> {
+): Promise<Partial<InkwellConfig> | null> {
   const jiti = createJiti(pathToFileURL(configPath).href, { moduleCache: false });
 
   let mod: unknown;
@@ -88,7 +89,7 @@ async function readConfigFile(
   } catch (err) {
     const code = (err as NodeJS.ErrnoException).code;
     if (code === "MODULE_NOT_FOUND" || code === "ERR_MODULE_NOT_FOUND") {
-      return {};
+      return null;
     }
     throw new Error(
       `Failed to load inkwell.config.js: ${(err as Error).message}`,
@@ -98,15 +99,25 @@ async function readConfigFile(
   if (mod && typeof mod === "object") {
     // Handle both `export default {}` and `module.exports = {}`
     const cfg = ("default" in mod ? mod.default : mod) as Partial<InkwellConfig>;
-    return cfg ?? {};
+    return cfg ?? null;
   }
 
-  return {};
+  return null;
 }
 
 /** Strip trailing slash from siteUrl */
 function normalizeUrl(url: string): string {
   return url.replace(/\/$/, "");
+}
+
+/** Validate pageSize is a positive integer. */
+function validatePageSize(value: number): number {
+  if (!Number.isFinite(value) || value < 1 || !Number.isInteger(value)) {
+    throw new Error(
+      `inkwell.config.js has invalid "pageSize": ${value}. Must be a positive integer.`,
+    );
+  }
+  return value;
 }
 
 /** Validate locale in language-region format (e.g. en-US). */

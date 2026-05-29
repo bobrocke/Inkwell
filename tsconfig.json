@@ -16,5 +16,5 @@
     "verbatimModuleSyntax": true
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist", "published", "tests"]
+  "exclude": ["node_modules", "dist", "_published"]
 }

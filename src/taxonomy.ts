@@ -1,13 +1,5 @@
+import { toStringArray } from "./shared.js";
 import type { Page, Term, ResolvedConfig, TaxonomyConfig } from "./types.js";
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function toStringArray(value: unknown): string[] {
-  if (typeof value === "string") return [value];
-  if (Array.isArray(value))
-    return value.filter((v): v is string => typeof v === "string");
-  return [];
-}
 
 /**
  * Convert a term name to a URL-safe slug.
@@ -75,6 +67,7 @@ function buildTaxonomy(
 
   // Sort each term's pages so templates get a predictable order
   for (const term of Object.values(termMap)) {
+    if (term.pages.length <= 1) continue;
     term.pages.sort((a, b) => {
       const ta = a.date?.getTime() ?? 0;
       const tb = b.date?.getTime() ?? 0;

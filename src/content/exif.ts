@@ -8,11 +8,7 @@ import type { Page, MediaFile, ExifData, ResolvedConfig } from "../types.js";
  */
 const MEDIA_FIELDS = ["image", "images", "cover", "media", "photo", "photos"];
 
-function toArray(value: unknown): string[] {
-  if (typeof value === "string") return [value];
-  if (Array.isArray(value)) return value.filter((v): v is string => typeof v === "string");
-  return [];
-}
+import { toStringArray as toArray } from "../shared.js";
 
 /**
  * Resolve a media reference from frontmatter to an absolute filesystem path.

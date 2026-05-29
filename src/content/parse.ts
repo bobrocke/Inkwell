@@ -64,7 +64,7 @@ function makeRehypeShiki(highlighter: Awaited<ReturnType<typeof createHighlighte
 type AnyProcessor = Processor<any, any, any, any, any>;
 
 let _processorPromise: Promise<AnyProcessor> | null = null;
-let _processorParams: { langs: string; lightTheme: string; darkTheme: string } | null = null;
+let _processorKey: string | null = null;
 
 async function buildProcessor(langs: string[], lightTheme: string, darkTheme: string): Promise<AnyProcessor> {
   const highlighter = await createHighlighter({
@@ -85,11 +85,11 @@ async function buildProcessor(langs: string[], lightTheme: string, darkTheme: st
 }
 
 function getProcessor(langs: string[], lightTheme: string, darkTheme: string): Promise<AnyProcessor> {
-  const paramsKey = JSON.stringify({ langs, lightTheme, darkTheme });
+  const key = JSON.stringify({ langs, lightTheme, darkTheme });
 
-  if (!_processorPromise || _processorParams?.langs !== paramsKey) {
+  if (!_processorPromise || _processorKey !== key) {
     _processorPromise = buildProcessor(langs, lightTheme, darkTheme);
-    _processorParams = { langs: paramsKey, lightTheme, darkTheme };
+    _processorKey = key;
   }
   return _processorPromise;
 }
@@ -97,7 +97,7 @@ function getProcessor(langs: string[], lightTheme: string, darkTheme: string): P
 /** Reset the processor singleton (e.g. after a config change in dev mode). */
 export function resetProcessor(): void {
   _processorPromise = null;
-  _processorParams = null;
+  _processorKey = null;
 }
 
 // ─── Frontmatter extraction ───────────────────────────────────────────────────
@@ -177,7 +177,7 @@ async function parseFileInternal(
   const date = rawDate ? new Date(rawDate as string) : undefined;
   const rawLastmod = frontmatter.lastmod;
   const lastmod = rawLastmod ? new Date(rawLastmod as string) : undefined;
-  const draft = frontmatter.draft === true ? true : undefined;
+  const draft = (frontmatter.draft === true) || undefined;
   const excerpt = String(frontmatter.excerpt ?? extractExcerpt(html));
 
   // Derive collection name from top-level directory inside contentDir

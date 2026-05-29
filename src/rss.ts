@@ -22,8 +22,11 @@ function rfc822(date: Date): string {
 function buildItem(page: Page, siteUrl: string): string {
   const link = `${siteUrl}${page.url}`;
   const title = escapeXml(page.title);
-  const description = escapeXml(page.excerpt ?? "");
   const pubDate = page.date ? rfc822(page.date) : "";
+  const excerpt = page.excerpt ?? "";
+  const description = excerpt
+    ? `      <description><![CDATA[${excerpt.replace(/\]\]>/g, "]]]]><![CDATA[>")}]]></description>`
+    : "";
 
   return [
     `    <item>`,
@@ -31,7 +34,7 @@ function buildItem(page: Page, siteUrl: string): string {
     `      <link>${link}</link>`,
     `      <guid isPermaLink="true">${link}</guid>`,
     pubDate ? `      <pubDate>${pubDate}</pubDate>` : "",
-    description ? `      <description>${description}</description>` : "",
+    description,
     `    </item>`,
   ]
     .filter(Boolean)

@@ -40,12 +40,12 @@ export interface BuildResult {
  *  4. Parse markdown → Pages (remark + Shiki)
  *  5. Filter drafts
  *  6. Build taxonomy Terms
- *  6. Build Listings (pagination + prev/next)
- *  7. Assemble Site object
- *  8. Process CSS (lightningcss)
- *  9. Copy static assets
- * 10. Render templates → HTML (Vento)
- * 11. Generate RSS feed
+ *  7. Build Listings (pagination + prev/next)
+ *  8. Assemble Site object
+ *  9. Process CSS (lightningcss)
+ * 10. Copy static assets
+ * 11. Render templates → HTML (Vento)
+ * 12. Generate RSS feed
  */
 export async function build(options: BuildOptions = {}): Promise<BuildResult> {
   const start = Date.now();
@@ -84,7 +84,7 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
   }
   await emitter.emit("afterParse", { pages, config });
 
-  // ── 5. Taxonomy ─────────────────────────────────────────────────────────────
+  // ── 6. Taxonomy ─────────────────────────────────────────────────────────────
   consola.start("Building taxonomies…");
   const taxonomies = buildTaxonomies(pages, config);
   const termCount = Object.values(taxonomies).reduce(
@@ -94,16 +94,16 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
   if (termCount > 0) consola.info(`Built ${termCount} taxonomy term(s)`);
   await emitter.emit("afterTaxonomy", { pages, taxonomies, config });
 
-  // ── 6. Listings ─────────────────────────────────────────────────────────────
+  // ── 7. Listings ─────────────────────────────────────────────────────────────
   consola.start("Building listings…");
   const { pages: navPages, listings } = buildListings(pages, taxonomies, config);
   consola.info(`Built ${listings.length} listing page(s)`);
 
-  // ── 7. Site ─────────────────────────────────────────────────────────────────
+  // ── 8. Site ─────────────────────────────────────────────────────────────────
   const mode: "development" | "production" = options.mode ?? "production";
   const site = assembleSite(navPages, taxonomies, listings, config, mode);
 
-  // ── 8–11. Output (parallelisable) ───────────────────────────────────────────
+  // ── 9–12. Output (parallelisable) ───────────────────────────────────────────
   consola.start("Processing CSS, assets, templates & RSS…");
   await emitter.emit("beforeRender", { site });
   await Promise.all([
