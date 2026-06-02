@@ -160,7 +160,6 @@ This is the home page. Check out the [posts](/posts/) to get started.
 `;
 
 const GITIGNORE = `node_modules/
-dist/
 _published/
 `;
 

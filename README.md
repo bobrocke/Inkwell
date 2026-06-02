@@ -7,9 +7,11 @@ A batteries-included static site generator for content-heavy sites. TypeScript, 
 ## Quick start
 
 ```bash
-mkdir my-site && cd my-site
-inkwell new .
-inkwell serve
+mkdir myblog && cd myblog
+npm init -y && npm pkg set type=module
+npm install inkwell-ssg
+npx inkwell new
+npx inkwell serve
 ```
 
 Or scaffold into a named subdirectory:

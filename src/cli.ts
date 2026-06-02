@@ -136,7 +136,10 @@ const newCmd = defineCommand({
   async run({ args }) {
     const { scaffold } = await import("./scaffold.js");
     const dest = args.name ?? ".";
-    const targetDir = path.resolve(process.cwd(), dest);
+    const resolved = path.resolve(process.cwd(), dest);
+    const targetDir = dest !== "." && resolved === process.cwd()
+      ? process.cwd()
+      : resolved;
     const siteName = path.basename(targetDir);
     consola.start(`Creating new site in ${targetDir} …`);
     try {
