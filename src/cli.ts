@@ -3,6 +3,11 @@ import { defineCommand, runMain } from "citty";
 import { consola } from "consola";
 import path from "node:path";
 import { execSync } from "node:child_process";
+import { readFileSync } from "node:fs";
+
+const pkg = JSON.parse(
+  readFileSync(new URL("../package.json", import.meta.url), "utf-8"),
+) as { version: string };
 
 consola.options.formatOptions = { ...consola.options.formatOptions, date: false };
 // ── install ────────────────────────────────────────────────────────────────────
@@ -161,13 +166,25 @@ const newCmd = defineCommand({
   },
 });
 
+// ── version ────────────────────────────────────────────────────────────────────
+
+const versionCmd = defineCommand({
+  meta: {
+    name: "version",
+    description: "Print the inkwell version",
+  },
+  async run() {
+    consola.info(`inkwell v${pkg.version}`);
+  },
+});
+
 // ── root command ───────────────────────────────────────────────────────────────
 
 const main = defineCommand({
   meta: {
     name: "inkwell",
     description: "A batteries-included static site generator",
-    version: "0.1.0",
+    version: pkg.version,
   },
   subCommands: {
     install: installCmd,
@@ -175,6 +192,7 @@ const main = defineCommand({
     serve: serveCmd,
     "serve-d": serveDraftCmd,
     new: newCmd,
+    version: versionCmd,
   },
 });
 

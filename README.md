@@ -14,14 +14,6 @@ npx inkwell new
 npx inkwell serve
 ```
 
-Or scaffold into a named subdirectory:
-
-```bash
-inkwell new my-site
-cd my-site
-inkwell serve
-```
-
 ## Commands
 
 | Command              | Description                                            |
@@ -31,6 +23,7 @@ inkwell serve
 | `inkwell serve-d`    | Like `serve`, but includes pages with `draft: true`    |
 | `inkwell new <name>` | Scaffold a new site                                    |
 | `inkwell install`    | Install site dependencies (runs `npm install`)         |
+| `inkwell version`    | Display the current Inkwell version                    |
 
 All commands accept `--cwd <path>` to run from a different directory. `inkwell serve` and `inkwell serve-d` also accept `--port` and `--host`.
 

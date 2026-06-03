@@ -8,30 +8,68 @@ const CONFIG_TEMPLATE = (
   name: string,
 ) => `/** @type {import('inkwell-ssg').InkwellConfig} */
 export default {
+  // ── Required ──────────────────────────────────────────────────────────────────
   title: ${JSON.stringify(name)},
   siteUrl: "https://example.com",
+
+  // ── Site metadata ─────────────────────────────────────────────────────────────
   language: "en-US",
   description: "A site built with Inkwell.",
 
+  // ── Directories (relative to project root) ────────────────────────────────────
+  contentDir: "content",
+  outputDir: "_published",
+  staticDir: "static",
+  templatesDir: "templates",
+  assetsDir: "assets",
+
+  // ── Pagination ────────────────────────────────────────────────────────────────
+  pageSize: 10,
+
+  // ── Taxonomies ────────────────────────────────────────────────────────────────
   taxonomies: [
-    { name: "tags", pageSize: 10 },
-    { name: "categories", pageSize: 10 },
+    {
+      name: "tags",
+      pageSize: 10,
+      // indexPageSize: 10,
+      // titleString: "Posts tagged {term}",
+    },
+    {
+      name: "categories",
+      pageSize: 10,
+    },
   ],
 
+  // ── Collections ───────────────────────────────────────────────────────────────
   collections: [
-    { name: "blog", pageSize: 10, sort: "date", sortDir: "desc" },
+    {
+      name: "blog",
+      pageSize: 10,
+      sort: "date",      // "date" | "title" | "filename"
+      sortDir: "desc",   // "asc" | "desc"
+      // url: "/",       // override listing URL (default: /{name}/)
+    },
   ],
 
+  // ── RSS ───────────────────────────────────────────────────────────────────────
   rss: {
     enabled: true,
+    path: "/rss.xml",
     limit: 20,
   },
 
-  // Default Shiki languages: javascript, typescript, python, php, html, erb, go, json, liquid, markdown, ruby, css, vento
-  // Add more languages as needed:
-  // shiki: {
-  //   langs: ["rust", "bash"],
-  // },
+  // ── Syntax highlighting (Shiki) ───────────────────────────────────────────────
+  shiki: {
+    langs: [
+      "javascript", "typescript", "python", "php", "html", "erb",
+      "go", "json", "liquid", "markdown", "ruby", "css", "vento",
+    ],
+    lightTheme: "github-light",
+    darkTheme: "github-dark",
+  },
+
+  // ── Plugins ───────────────────────────────────────────────────────────────────
+  plugins: [],
 };
 `;
 
