@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="en">
+<body>
+  <h1>{{ listing.title }}</h1>
+  {{ for p of listing.pages }}
+    <a href="{{ p.url }}">{{ p.title }}</a>
+  {{ /for }}
+</body>
+</html>
