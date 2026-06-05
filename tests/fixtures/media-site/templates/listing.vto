@@ -1,0 +1,4 @@
+{{- set content }}
+<h1>{{ listing.title ?? listing.collection }}</h1>
+{{- /set }}
+{{ include "base.vto" { content, title: listing.title } }}

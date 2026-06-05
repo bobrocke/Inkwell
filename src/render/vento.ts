@@ -175,14 +175,16 @@ async function renderPages(
 ): Promise<void> {
   const helpers = buildHelpers(site);
   await Promise.all(
-    site.pages.map(async (page) => {
-      const templateName = resolvePageTemplate(page);
-      const html = await renderTemplate(engine, config.templatesDir, templateName, { page, site, ...helpers }, [
-        "page.vto",
-      ]);
-      const outPath = urlToOutputPath(page.url, config.outputDir);
-      await write(outPath, html);
-    }),
+    site.pages
+      .filter((p) => !p.isMedia)
+      .map(async (page) => {
+        const templateName = resolvePageTemplate(page);
+        const html = await renderTemplate(engine, config.templatesDir, templateName, { page, site, ...helpers }, [
+          "page.vto",
+        ]);
+        const outPath = urlToOutputPath(page.url, config.outputDir);
+        await write(outPath, html);
+      }),
   );
 }
 

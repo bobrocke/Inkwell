@@ -1,7 +1,7 @@
 import { rm, mkdir } from "node:fs/promises";
 import { consola } from "consola";
 import { loadConfig } from "./config.js";
-import { discoverContent } from "./content/discover.js";
+import { discoverContent, discoverMediaFiles } from "./content/discover.js";
 import { parseContent } from "./content/parse.js";
 
 import { assignCollections } from "./collections.js";
@@ -86,6 +86,12 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
   }
   await emitter.emit("afterParse", { pages, config });
 
+  // ── 5.5. Discover media files ──────────────────────────────────────────────────
+  const mediaPages = await discoverMediaFiles(config);
+  if (mediaPages.length > 0) {
+    consola.info(`Found ${mediaPages.length} media file(s)`);
+  }
+
   // ── 6. Collections ───────────────────────────────────────────────────────────
   assignCollections(pages, config);
 
@@ -106,7 +112,8 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
 
   // ── 9. Site ─────────────────────────────────────────────────────────────────
   const mode: "development" | "production" = options.mode ?? "production";
-  const site = assembleSite(navPages, taxonomies, listings, config, mode);
+  const allPages = [...navPages, ...mediaPages];
+  const site = assembleSite(allPages, taxonomies, listings, config, mode);
 
   // ── 10–13. Output (parallelisable) ───────────────────────────────────────────
   consola.start("Processing CSS, assets, templates & RSS…");

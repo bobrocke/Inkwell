@@ -33,6 +33,8 @@ export interface Page {
   lastmod?: Date;
   /** When true, this page is a draft and excluded from production builds */
   draft?: boolean;
+  /** When true, this page is a media file (image, etc.) auto-discovered from static/ */
+  isMedia?: boolean;
   /** Fully rendered HTML body */
   html: string;
   /** First paragraph or explicit `excerpt` frontmatter field */

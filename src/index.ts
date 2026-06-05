@@ -18,7 +18,7 @@ export type {
 } from "./types.js";
 
 export { loadConfig } from "./config.js";
-export { discoverContent } from "./content/discover.js";
+export { discoverContent, discoverMediaFiles } from "./content/discover.js";
 export { parseContent, parseFile, fileToUrl, resetProcessor } from "./content/parse.js";
 export { enrichAllWithExif, enrichWithExif, readExif } from "./content/exif.js";
 export { buildTaxonomies, slugify } from "./taxonomy.js";

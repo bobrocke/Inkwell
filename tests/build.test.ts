@@ -6,10 +6,9 @@ import { readFile, rm } from "node:fs/promises";
 import { build } from "../src/build.js";
 import { loadConfig } from "../src/config.js";
 
-const FIXTURE = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "fixtures/simple-site",
-);
+const FIXTURE_DIR = path.dirname(fileURLToPath(import.meta.url));
+const FIXTURE = path.resolve(FIXTURE_DIR, "fixtures/simple-site");
+const MEDIA_FIXTURE = path.resolve(FIXTURE_DIR, "fixtures/media-site");
 
 async function cleanup() {
   const config = await loadConfig(FIXTURE);
@@ -127,5 +126,35 @@ describe("build (integration)", () => {
     const config = await loadConfig(FIXTURE);
     await build({ cwd: FIXTURE, includeDrafts: true });
     expect(existsSync(path.join(config.outputDir, "posts/draft-post/index.html"))).toBe(true);
+  });
+
+  it("includes media pages in site.collections", async () => {
+    const result = await build({ cwd: MEDIA_FIXTURE });
+
+    expect(result.site.collections.fauna).toBeDefined();
+    expect(result.site.collections.fauna.length).toBe(2);
+
+    const urls = result.site.collections.fauna.map((p) => p.url).sort();
+    expect(urls).toContain("/galleries/fauna/Orangutan.jpg");
+    expect(urls).toContain("/galleries/fauna/Sea_Lions.jpg");
+  });
+
+  it("media pages have empty html and frontmatter", async () => {
+    const result = await build({ cwd: MEDIA_FIXTURE });
+
+    for (const page of result.site.collections.fauna ?? []) {
+      expect(page.html).toBe("");
+      expect(page.frontmatter).toEqual({});
+    }
+  });
+
+  it("does not create media pages when media is not configured", async () => {
+    const result = await build({ cwd: FIXTURE }); // simple-site has no media
+
+    // All collections should come from markdown pages only
+    const totalFromCollections = Object.values(result.site.collections)
+        .reduce((sum, pages) => sum + pages.length, 0);
+    const markdownPages = result.site.pages.filter((p) => p.html !== "");
+    expect(totalFromCollections).toBeLessThanOrEqual(markdownPages.length);
   });
 });
