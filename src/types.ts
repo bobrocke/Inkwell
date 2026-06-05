@@ -151,6 +151,13 @@ export interface CollectionConfig {
    * If omitted, the default folder-based convention applies.
    */
   glob?: string | string[];
+  /**
+   * Glob pattern(s) relative to staticDir for discovering media files (images, etc.)
+   * into this collection. Each match becomes a lightweight Page with url/src/title
+   * set from the file path and empty html/frontmatter.
+   * Example: "galleries/fauna/**\/*.{jpg,png}" or ["fauna/*.jpg", "fauna/*.png"].
+   */
+  media?: string | string[];
   sort?: "date" | "title" | "filename";
   sortDir?: "asc" | "desc";
   /** Items per listing page; overrides top-level pageSize */
