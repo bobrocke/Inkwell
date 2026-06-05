@@ -142,8 +142,15 @@ export interface TaxonomyConfig {
 }
 
 export interface CollectionConfig {
-  /** Collection name — matches the top-level folder under contentDir (e.g. "posts" → content/posts/) */
+  /** Collection name — also used as the listing URL slug (default: /{name}/) */
   name: string;
+  /**
+   * Glob pattern(s) relative to contentDir for selecting pages into this collection.
+   * Overrides the automatic folder-based derivation (content/{name}/ → collection: "{name}").
+   * Supports multiple patterns, e.g. ["galleries/flora/**\/*.md", "botany/**\/*.md"].
+   * If omitted, the default folder-based convention applies.
+   */
+  glob?: string | string[];
   sort?: "date" | "title" | "filename";
   sortDir?: "asc" | "desc";
   /** Items per listing page; overrides top-level pageSize */

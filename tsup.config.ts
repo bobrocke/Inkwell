@@ -19,6 +19,7 @@ export default defineConfig({
     "fast-glob",
     "jiti",
     "lightningcss",
+    "picomatch",
     "rehype-stringify",
     "remark",
     "remark-frontmatter",

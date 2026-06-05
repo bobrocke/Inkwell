@@ -115,13 +115,34 @@ taxonomies: [
 
 | Field      | Type                              | Default    | Description                         |
 | ---------- | --------------------------------- | ---------- | ----------------------------------- |
-| `name`     | `string`                          | —          | Matches the folder under `content/` |
+| `name`     | `string`                          | —          | Collection name and listing URL slug |
+| `glob`     | `string \| string[]`              | —          | Glob pattern(s) for page selection  |
 | `pageSize` | `number`                          | `pageSize` | Items per listing page              |
 | `sort`     | `"date" \| "title" \| "filename"` | `"date"`   | Sort field                          |
 | `sortDir`  | `"asc" \| "desc"`                 | `"desc"`   | Sort direction                      |
 | `url`      | `string`                          | `/{name}/` | Base URL for the collection listing |
 
-A collection named `"posts"` reads all files under `content/posts/`, paginates them at `/posts/`, and assigns prev/next navigation. Set `url: "/"` to serve the listing as the home page instead.
+**Without `glob`:** a collection named `"posts"` reads all files under `content/posts/`, paginates them at `/posts/`, and assigns prev/next navigation. Set `url: "/"` to serve the listing as the home page.
+
+**With `glob`:** the collection name is decoupled from the folder structure. Patterns are relative to the content directory:
+
+```js
+collections: [
+  // Pages in content/galleries/flora/ become a "flora" collection
+  { name: "flora", glob: "galleries/flora/**/*.md" },
+
+  // A collection spanning multiple directories
+  { name: "essays", glob: ["blog/**/*.md", "notes/**/*.md"] },
+
+  // Exclude drafts from a collection
+  { name: "published", glob: ["posts/**/*.md", "!posts/drafts/**"] },
+
+  // Use the default folder-based convention (no glob)
+  { name: "blog", pageSize: 10 },
+],
+```
+
+When a page matches a `glob`, the collection assignment overrides the automatic folder-derived name. The first matching collection wins — order collections with more specific globs before broader ones. Prev/next navigation and pagination work identically regardless of how the collection membership was determined.
 
 ## Templates
 

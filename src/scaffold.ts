@@ -41,6 +41,9 @@ export default {
   ],
 
   // ── Collections ───────────────────────────────────────────────────────────────
+  // Pages are automatically grouped by top-level folder (e.g. content/blog/ → "blog").
+  // Use 'glob' to define a collection with explicit file patterns — a collection's
+  // name can differ from the folder name, span multiple directories, or use negations.
   collections: [
     {
       name: "blog",
@@ -48,6 +51,7 @@ export default {
       sort: "date",      // "date" | "title" | "filename"
       sortDir: "desc",   // "asc" | "desc"
       // url: "/",       // override listing URL (default: /{name}/)
+      // glob: "galleries/flora/**/*.md",  // explicit pattern override
     },
   ],
 

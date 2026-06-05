@@ -4,6 +4,7 @@ import { loadConfig } from "./config.js";
 import { discoverContent } from "./content/discover.js";
 import { parseContent } from "./content/parse.js";
 
+import { assignCollections } from "./collections.js";
 import { buildTaxonomies } from "./taxonomy.js";
 import { buildListings } from "./listings.js";
 import { assembleSite } from "./site.js";
@@ -39,13 +40,14 @@ export interface BuildResult {
  *  3. Discover content files
  *  4. Parse markdown → Pages (remark + Shiki)
  *  5. Filter drafts
- *  6. Build taxonomy Terms
- *  7. Build Listings (pagination + prev/next)
- *  8. Assemble Site object
- *  9. Process CSS (lightningcss)
- * 10. Copy static assets
- * 11. Render templates → HTML (Vento)
- * 12. Generate RSS feed
+ *  6. Assign collections (glob-based overrides)
+ *  7. Build taxonomy Terms
+ *  8. Build Listings (pagination + prev/next)
+ *  9. Assemble Site object
+ * 10. Process CSS (lightningcss)
+ * 11. Copy static assets
+ * 12. Render templates → HTML (Vento)
+ * 13. Generate RSS feed
  */
 export async function build(options: BuildOptions = {}): Promise<BuildResult> {
   const start = Date.now();
@@ -84,7 +86,10 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
   }
   await emitter.emit("afterParse", { pages, config });
 
-  // ── 6. Taxonomy ─────────────────────────────────────────────────────────────
+  // ── 6. Collections ───────────────────────────────────────────────────────────
+  assignCollections(pages, config);
+
+  // ── 7. Taxonomy ─────────────────────────────────────────────────────────────
   consola.start("Building taxonomies…");
   const taxonomies = buildTaxonomies(pages, config);
   const termCount = Object.values(taxonomies).reduce(
@@ -94,16 +99,16 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
   if (termCount > 0) consola.info(`Built ${termCount} taxonomy term(s)`);
   await emitter.emit("afterTaxonomy", { pages, taxonomies, config });
 
-  // ── 7. Listings ─────────────────────────────────────────────────────────────
+  // ── 8. Listings ─────────────────────────────────────────────────────────────
   consola.start("Building listings…");
   const { pages: navPages, listings } = buildListings(pages, taxonomies, config);
   consola.info(`Built ${listings.length} listing page(s)`);
 
-  // ── 8. Site ─────────────────────────────────────────────────────────────────
+  // ── 9. Site ─────────────────────────────────────────────────────────────────
   const mode: "development" | "production" = options.mode ?? "production";
   const site = assembleSite(navPages, taxonomies, listings, config, mode);
 
-  // ── 9–12. Output (parallelisable) ───────────────────────────────────────────
+  // ── 10–13. Output (parallelisable) ───────────────────────────────────────────
   consola.start("Processing CSS, assets, templates & RSS…");
   await emitter.emit("beforeRender", { site });
   await Promise.all([
